@@ -44,6 +44,14 @@ export function transferir(contaOrigem, contaDestino, valor) {
       },
       where: {id: contaDestino}
     });
+    const registrarTransferencia = await tx.transacao.create({
+    data:{
+      valor: valor,
+      origemId: contaOrigem,
+      destinoId: contaDestino
+    }
+    });
+    console.log(registrarTransferencia);
     return "Transferência realizada com sucesso!";
   })
 }
