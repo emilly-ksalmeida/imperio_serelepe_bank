@@ -1,4 +1,5 @@
 import { PrismaClient } from "../generated/prisma/index.js";
+import bcryptjs from "bcryptjs";
 
 const prisma = new PrismaClient();
 
@@ -7,18 +8,22 @@ export async function listarUsuarios() {
     return user;
 }
 
-export function criarUsuario(dados) {
-  const {nome, email, senhaHash, senhaContaHash} = dados;
+export async function criarUsuario(dados) {
+  const {nome, email, senha, senhaConta} = dados;
+
+  const senhaHash = await bcryptjs.hash(senha, 10);
+  const senhaContaHash = await bcryptjs.hash(senhaConta, 10);
+
   return prisma.$transaction(async (tx)=>{
     const novoUsuario = await tx.usuarios.create({
       data: {
-        nome: nome,
-        email: email,
-        senhaHash: senhaHash
+        nome,
+        email,
+        senhaHash
       }});
     const novaConta = await tx.conta.create({
       data: {
-        senhaContaHash: senhaContaHash,
+        senhaContaHash,
         idUsuario: novoUsuario.id
       }
     });
@@ -27,14 +32,19 @@ export function criarUsuario(dados) {
 }
 
 export function transferir(dados) {
-  const {contaOrigem, contaDestino, valor} = dados;
+  const {contaOrigem, contaDestino, valor, senha} = dados;
   return prisma.$transaction(async (tx) => {
     const origem = await tx.conta.findUnique({
         where: {id: contaOrigem}
     });
+
+    const verificacaoSenha = await bcryptjs.compare(senha, origem.senhaContaHash);
+    if(!verificacaoSenha){
+      throw new Error("Senha da conta incorreta!!");
+    }
+
     const saldoOrigem = Number(origem.saldo);
     const operacao = saldoOrigem - valor;
-
     if (operacao < 0) {
       throw new Error(`Não existe saldo suficiente para mandar o valor $${valor}`);
     }
@@ -65,7 +75,7 @@ export function transferir(dados) {
       destinoId: contaDestino
     }
     });
-    console.log(registrarTransferencia);
+    
     return "Transferência realizada com sucesso!";
   })
 }
