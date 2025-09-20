@@ -27,9 +27,10 @@ app.post("/novo-usuario", async (req, res)=>{
 });
 
 app.post("/fazer-transferencia", async (req, res)=>{
-    const {orig, dest, val} = req.body;
+    
     try {
-        const resultado = await transferir(orig, dest, val);
+        const dados = req.body;
+        const resultado = await transferir(dados);
         res.status(200).json(resultado);
     } catch(erro){
         console.error(erro.message);
