@@ -17,7 +17,7 @@ app.get("/", async (req, res)=>{
 app.post("/novo-usuario", async (req, res)=>{
    try {
     const novosDados = req.body;
-    console.log(novosDados);
+    
     const usuarioCriado = await criarUsuario(novosDados);
     res.status(200).json(usuarioCriado);
     } catch(erro){
