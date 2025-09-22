@@ -1,19 +1,19 @@
 import express from "express";
-import fazerLogin from "../model/login.js";
-import autenticacaoToken from "../middleware/token.js";
-import { listarTodosUsuarios, criarUsuario, fazerTransferencia } from "../controller/controllers.js";
+import login from "../model/login.js";
+import verifyToken from "../middleware/verifyToken.js";
+import { listAllUsers, createUser, makeTransfer } from "../controller/controllers.js";
 
 const routes = (app) => {
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
 
-    app.get("/", autenticacaoToken, listarTodosUsuarios);
+    app.get("/", verifyToken, listAllUsers);
 
-    app.post("/login", fazerLogin);
+    app.post("/login", login);
 
-    app.post("/adicionar-usuario", criarUsuario);
+    app.post("/create-user", createUser);
 
-    app.post("/fazer-transferencia", autenticacaoToken, fazerTransferencia);
+    app.post("/make-transfer", verifyToken, makeTransfer);
 
 }
 export default routes;

@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import jwt from "jsonwebtoken";
 
-const autenticacaoToken = (req, res, next) =>{
+const verifyToken = (req, res, next) =>{
     const token = req.headers["authorization"];
     if(!token) return res.status(403).json({"message": "Token não fornecido."});
 
@@ -12,4 +12,4 @@ const autenticacaoToken = (req, res, next) =>{
         next();
     })
 }
-export default autenticacaoToken;
+export default verifyToken;

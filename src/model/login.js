@@ -4,27 +4,27 @@ import jwt from "jsonwebtoken";
 import bcryptjs from "bcryptjs";
 import prisma from "../model/db.js";
 
-export default async function fazerLogin(req, res) {
+export default async function login(req, res) {
     try{
-        const {email, senha} = req.body;
-        if(!email || !senha){
-            throw new Error("e-mail ou senha inválidos!");
+        const {username, password} = req.body;
+        if(!username || !password){
+            throw new Error("Nome de usuário ou senha inválidos!");
         }
-        const usuario = await prisma.usuarios.findUnique({
+        const user = await prisma.users.findUnique({
             where: {
-                email: email
+                username: username
             }
         });
-        if(!usuario){
-            throw new Error("e-mail ou senha inválidos!");
+        if(!user){
+            throw new Error("Nome de usuário ou senha inválidos!");
         }
-        const verificacaoSenha = await bcryptjs.compare(senha, usuario.senhaHash);
-        if(!verificacaoSenha){
-            throw new Error("e-mail ou senha inválidos!");
+        const checkPassword = await bcryptjs.compare(password, user.passwordHash);
+        if(!checkPassword){
+            throw new Error("Nome de usuário ou senha inválidos!");
         }
        
-        const token = jwt.sign({id: usuario.id, email: usuario.email, nome: usuario.nome}, process.env.SECRET_KEY, {expiresIn: process.env.TOKEN_EXP});
-        res.send(`Olá ${usuario.nome}, login feito com sucesso. Seu token: ${token}`);
+        const token = jwt.sign({id: user.id, username: user.username, name: user.name}, process.env.SECRET_KEY, {expiresIn: process.env.TOKEN_EXP});
+        res.send(`Olá ${user.name}, login feito com sucesso. Seu token: ${token}`);
 
     } catch(erro){
         console.error(erro.message);
