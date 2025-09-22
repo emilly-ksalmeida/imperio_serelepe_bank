@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+import jwt from "jsonwebtoken";
 import bcryptjs from "bcryptjs";
 import prisma from "../model/db.js";
 
@@ -13,13 +16,15 @@ export default async function fazerLogin(req, res) {
             }
         });
         if(!usuario){
-            throw new Error("O usuario não existe!");
+            throw new Error("e-mail ou senha inválidos!");
         }
         const verificacaoSenha = await bcryptjs.compare(senha, usuario.senhaHash);
         if(!verificacaoSenha){
-            throw new Error("Senha de login incorreta!!");
+            throw new Error("e-mail ou senha inválidos!");
         }
-        res.send(`Olá ${usuario.nome}, login feito com sucesso.`);
+       
+        const token = jwt.sign({id: usuario.id, email: usuario.email, nome: usuario.nome}, process.env.SECRET_KEY, {expiresIn: process.env.TOKEN_EXP});
+        res.send(`Olá ${usuario.nome}, login feito com sucesso. Seu token: ${token}`);
 
     } catch(erro){
         console.error(erro.message);
