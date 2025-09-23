@@ -1,4 +1,4 @@
-import list from "../model/listUsers.js";
+import { list, getBalanceById } from "../model/listUsers.js";
 import newUser from "../model/newUser.js";
 import transfer from "../model/transfers.js";
 
@@ -27,7 +27,19 @@ export async function makeTransfer(req, res){
         const result = await transfer(data);
         res.status(200).json(result);
     } catch(erro){
+        console.error(erro);
+        res.status(500).json({"Erro": "Falha na requisição"});
+    }
+}
+export async function getBalance(req, res){
+    try {
+        const { id } = req.params;
+        const dataUserId = req.dataUser.id;
+        if(!id || dataUserId !== id) return res.status(500).json({"Erro": "Falha na requisição"});
+        const result = await getBalanceById(id);
+        res.status(200).json(result);
+    } catch(erro){
         console.error(erro.message);
-        res.status(500).json({"Erro": erro.message});
+        res.status(500).json({"Erro": "Falha na requisição"});
     }
 }

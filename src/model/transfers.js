@@ -2,11 +2,11 @@ import bcryptjs from "bcryptjs";
 import prisma from "./db.js";
 
 export default function transfer(dados) {
-  const {fromAccount, toAccount, value, password} = dados;
+  const {fromAccountId, toAccountId, value, password} = dados;
   
   return prisma.$transaction(async (tx) => {
     const from = await tx.account.findUnique({
-        where: {id: fromAccount}
+        where: {id: fromAccountId}
     });
 
     const checkPassword = await bcryptjs.compare(password, from.accountPasswordHash);
@@ -24,11 +24,11 @@ export default function transfer(dados) {
       data: {
         balance: operation
       },
-      where: {id: fromAccount}
+      where: {id: fromAccountId}
     });
     
     const to = await tx.account.findUnique({
-        where: {id: toAccount}
+        where: {id: toAccountId}
     });
     
     const toBalance = Number(to.balance);
@@ -38,13 +38,13 @@ export default function transfer(dados) {
       data: {
         balance: total
       },
-      where: {id: toAccount}
+      where: {id: toAccountId}
     });
     const registerTransfer = await tx.transfers.create({
     data:{
       value: value,
-      fromId: fromAccount,
-      toId: toAccount
+      fromId: fromAccountId,
+      toId: toAccountId
     }
     });
     
