@@ -3,6 +3,7 @@ import prisma from "./db.js";
 
 export default function transfer(dados) {
   const {fromAccount, toAccount, value, password} = dados;
+  
   return prisma.$transaction(async (tx) => {
     const from = await tx.account.findUnique({
         where: {id: fromAccount}
@@ -25,10 +26,11 @@ export default function transfer(dados) {
       },
       where: {id: fromAccount}
     });
-
+    
     const to = await tx.account.findUnique({
         where: {id: toAccount}
     });
+    
     const toBalance = Number(to.balance);
     const total = toBalance + value;
   
