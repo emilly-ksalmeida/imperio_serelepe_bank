@@ -1,7 +1,7 @@
 import express from "express";
 import login from "../model/login.js";
 import verifyToken from "../middleware/verifyToken.js";
-import { listAllUsers, createUser, makeTransfer, getBalance } from "../controller/controllers.js";
+import { listAllUsers, createUser, makeTransfer, getBalance, getStatement } from "../controller/controllers.js";
 
 const routes = (app) => {
     app.use(express.urlencoded({ extended: true }));
@@ -9,6 +9,7 @@ const routes = (app) => {
 
     app.get("/", verifyToken, listAllUsers);
     app.get("/balance/:id", verifyToken, getBalance);
+    app.get("/statement/:id", verifyToken, getStatement);
     app.post("/login", login);
 
     app.post("/create-user", createUser);
