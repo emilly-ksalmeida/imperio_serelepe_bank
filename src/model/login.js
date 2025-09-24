@@ -22,8 +22,12 @@ export default async function login(req, res) {
         if(!checkPassword){
             throw new Error("Nome de usuário ou senha inválidos!");
         }
-       
-        const token = jwt.sign({id: user.id, username: user.username, name: user.name}, process.env.SECRET_KEY, {expiresIn: process.env.TOKEN_EXP});
+        const userAccountId = await prisma.account.findUnique({
+            where: {idUser: user.id},
+            select: {id: true}
+        });
+        
+        const token = jwt.sign({id: user.id, username: user.username, name: user.name, userAccountId: userAccountId}, process.env.SECRET_KEY, {expiresIn: process.env.TOKEN_EXP});
         res.send(`Olá ${user.name}, login feito com sucesso. Seu token: ${token}`);
 
     } catch(erro){
