@@ -1,12 +1,16 @@
 import bcryptjs from "bcryptjs";
 import prisma from "./db.js";
 
-export default function transfer(dados) {
-  const {fromAccountId, toAccountId, value, password} = dados;
-  
+export default function transfer(data) {
+  const { userAccountId, toAccountId, value, password } = data;
+  if(userAccountId === toAccountId){
+    throw new Error("Não é possível realizar esta transferência.");
+  } 
   return prisma.$transaction(async (tx) => {
+    
+
     const from = await tx.account.findUnique({
-        where: {id: fromAccountId}
+        where: {id: userAccountId}
     });
 
     const checkPassword = await bcryptjs.compare(password, from.accountPasswordHash);
@@ -17,14 +21,14 @@ export default function transfer(dados) {
     const fromBalance = Number(from.balance);
     const operation = fromBalance - value;
     if (operation < 0) {
-      throw new Error(`Não existe saldo suficiente para mandar o value $${value}`);
+      throw new Error(`Não existe saldo suficiente para mandar o valor $${value}`);
     }
     
     const fromUpdate= await tx.account.update({
       data: {
         balance: operation
       },
-      where: {id: fromAccountId}
+      where: {id: userAccountId}
     });
     
     const to = await tx.account.findUnique({
@@ -43,7 +47,7 @@ export default function transfer(dados) {
     const registerTransfer = await tx.transfers.create({
     data:{
       value: value,
-      fromId: fromAccountId,
+      fromId: userAccountId,
       toId: toAccountId
     }
     });
