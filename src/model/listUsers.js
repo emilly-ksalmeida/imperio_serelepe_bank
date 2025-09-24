@@ -27,15 +27,12 @@ export async function generateAccountStatement(userId){
             where: {idUser: userId},
             select:{id: true}
         });
-        const transferList = await prisma.transfers.findMany({
-            where: {fromId: accountId.id},
-            select: {id: true, value: true, createdAt: true}
+        const statement = await prisma.transfers.findMany({
+            where: {
+                OR: [{fromId: accountId.id}, {toId: accountId.id} ]
+            },
+            orderBy: [{createdAt: 'desc'}]
         });
-        const receivedList = await prisma.transfers.findMany({
-            where: {toId: accountId.id},
-            select: {id: true, value: true, createdAt: true}
-        });
-        const statement = {transfer: transferList, received: receivedList};
         return statement;
     } catch(erro){
         console.error(erro.message);
