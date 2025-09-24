@@ -24,11 +24,17 @@ export async function createUser(req, res) {
 export async function makeTransfer(req, res){
     try {
         const data = req.body;
-        const result = await transfer(data);
+        const { userAccountId } = req.dataCurrentUser;
+        const atualizedData = {
+            userAccountId: userAccountId.id,
+            ...data
+        }
+       
+        const result = await transfer(atualizedData);
         res.status(201).json(result);
     } catch(erro){
         console.error(erro);
-        res.status(500).json({"Erro": "Falha na requisição"});
+        res.status(500).json({"Erro": erro.message});
     }
 }
 export async function getBalance(req, res){
