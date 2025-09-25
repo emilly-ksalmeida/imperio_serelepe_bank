@@ -9,10 +9,10 @@ export async function list() {
         res.status(500).json({"Erro":"Falha na requisição"});
     }
 }
-export async function getBalanceById(id){
+export async function getBalanceById(accountId){
     try{
         const userBalance = await prisma.account.findUnique({
-            where: {idUser: id},
+            where: {id: accountId},
             select:{balance: true}
         });
         return userBalance;
@@ -23,13 +23,13 @@ export async function getBalanceById(id){
 }
 export async function generateAccountStatement(userId){
     try {
-        const accountId = await prisma.account.findUnique({
-            where: {idUser: userId},
-            select:{id: true}
-        });
+        // const accountId = await prisma.account.findUnique({
+        //     where: {idUser: userId},
+        //     select:{id: true}
+        // });
         const statement = await prisma.transfers.findMany({
             where: {
-                OR: [{fromId: accountId.id}, {toId: accountId.id} ]
+                OR: [{fromId: userId}, {toId: userId} ]
             },
             orderBy: [{createdAt: 'desc'}]
         });
