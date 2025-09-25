@@ -20,6 +20,6 @@ export default async function newUser(data) {
         idUser: newUser.id
       }
     });
-    return `Usuário ${name} criado com sucesso (id ${newUser.id}), seu número de conta é: ${newAccount.id}! `
+    return `Usuário ${name} criado com sucesso (id ${newUser.id}), seu número de conta é: ${newAccount.id}`
   });
 }
