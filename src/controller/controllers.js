@@ -1,6 +1,7 @@
 import { list, getBalanceById, generateAccountStatement } from "../model/listUsers.js";
 import newUser from "../model/newUser.js";
 import transfer from "../model/transfers.js";
+import createUserSchema from "../model/validateSchema.js";
 
 export async function listAllUsers(req, res){
     try {
@@ -14,8 +15,10 @@ export async function listAllUsers(req, res){
 export async function createUser(req, res) {
     try {
         const newData = req.body;
-        if(!newData.name || !newData.username || !newData.password || !newData.accountPassword) return res.status(400).json({"Erro": "Preencha todos os dados obrigatórios!"});
-        if(newData.password.length < 4 || newData.accountPassword.length < 4)return res.status(400).json({"Erro": "As senhas precisão ter no mínimo 4 caracteres!"});
+        const validateResult = createUserSchema.safeParse(newData);
+        if(!validateResult.success){
+            throw new Error(validateResult.error);
+        }
         const createdUser = await newUser(newData);
         res.status(201).json(createdUser);
     } catch(erro){
@@ -41,9 +44,6 @@ export async function makeTransfer(req, res){
 }
 export async function getBalance(req, res){
     try {
-        //const { id } = req.params;
-        //const dataUserId = req.dataCurrentUser.id;
-        //if(!id || dataUserId !== id) return res.status(400).json({"Erro": "Falha na requisição"});
         const accountId = req.dataCurrentUser.userAccountId.id;
         const result = await getBalanceById(accountId);
         res.status(200).json(result);
@@ -54,9 +54,6 @@ export async function getBalance(req, res){
 }
 export async function getStatement(req, res){
     try {
-        //const { id } = req.params;
-        //const dataUserId = req.dataCurrentUser.id;
-        //if(!id || dataUserId !== id) return res.status(400).json({"Erro": "Falha na requisição"});
         const accountId = req.dataCurrentUser.userAccountId.id;
         const result = await generateAccountStatement(accountId);
         res.status(200).json(result);
