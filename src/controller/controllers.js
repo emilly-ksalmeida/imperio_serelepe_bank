@@ -1,7 +1,8 @@
+import { createUserSchema, loginSchema, transferSchema } from "../model/validateSchema.js";
 import { list, getBalanceById, generateAccountStatement } from "../model/listUsers.js";
 import newUser from "../model/newUser.js";
 import transfer from "../model/transfers.js";
-import { createUserSchema, transferSchema } from "../model/validateSchema.js";
+import login from "../model/login.js";
 
 export async function listAllUsers(req, res){
     try {
@@ -27,6 +28,22 @@ export async function createUser(req, res) {
         res.status(500).json({"Erro": "Falha na requisição"});
     }
 }
+
+export async function loginUser(req, res) {
+    try{
+        const data = req.body;
+        const validatedData = loginSchema.safeParse(data);
+        if(!validatedData.success){
+            throw new Error(validatedData.error);
+        }
+        const createToken = await login(data);
+        res.status(201).json(createToken);
+    } catch(erro){
+        console.error(erro.message);
+        res.status(401).json({"Erro":"Falha na requisição, dados inválidos"});
+    }
+}
+
 export async function makeTransfer(req, res){
     try {
         const data = req.body;
