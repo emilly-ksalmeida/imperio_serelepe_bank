@@ -30,12 +30,11 @@ export async function createUser(req, res) {
 export async function makeTransfer(req, res){
     try {
         const data = req.body;
-        const validatedData = transferSchema.safeParse(data);
-        console.log(validatedData);
+        const validatedData = transferSchema.parse(data);
         const { userAccountId } = req.dataCurrentUser;
         const atualizedData = {
             userAccountId: userAccountId.id,
-            ...data
+            ...validatedData
         };
         const result = await transfer(atualizedData);
         res.status(201).json(result);

@@ -40,12 +40,13 @@ export const transferSchema = z.object({
     toAccountId: z.string()
     .length(4)
     .nonempty("Nome de Usuário é obrigatório"),
-    value: z.string()
-    .nonempty("O valor de transferência é obrigatório.")
-    .regex(/^\d+\.\d{2}$/, "O valor precisa ter duas casas decimais!")
-    .preprocess((val)=>{
-        return Number.parseFloat(val);
-    }, z.number),
+    value: z.preprocess((val)=>{
+        if(typeof val === "string" && /^\d+\.\d{2}$/.test(val)){
+            return Number.parseFloat(val);
+        }
+        return val;
+    }, z.number("O valor precisa ter duas casas decimais").gte(0.01, "O valor mínimo é 0.01"))
+    ,
 	accountPassword: z.string()
     .length(4)
     .nonempty("A senha de conta é obrigatória!")
