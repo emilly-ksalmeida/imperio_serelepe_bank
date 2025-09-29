@@ -2,18 +2,17 @@ import bcryptjs from "bcryptjs";
 import prisma from "./db.js";
 
 export default function transfer(data) {
-  const { userAccountId, toAccountId, value, password } = data;
+  const { userAccountId, toAccountId, value, accountPassword } = data;
   if(userAccountId === toAccountId){
     throw new Error("Não é possível realizar esta transferência.");
   } 
   return prisma.$transaction(async (tx) => {
     
-
     const from = await tx.account.findUnique({
         where: {id: userAccountId}
     });
 
-    const checkPassword = await bcryptjs.compare(password, from.accountPasswordHash);
+    const checkPassword = await bcryptjs.compare(accountPassword, from.accountPasswordHash);
     if(!checkPassword){
       throw new Error("Senha da conta incorreta!!");
     }

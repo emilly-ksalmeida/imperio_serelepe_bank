@@ -1,7 +1,7 @@
 import { list, getBalanceById, generateAccountStatement } from "../model/listUsers.js";
 import newUser from "../model/newUser.js";
 import transfer from "../model/transfers.js";
-import createUserSchema from "../model/validateSchema.js";
+import { createUserSchema, transferSchema } from "../model/validateSchema.js";
 
 export async function listAllUsers(req, res){
     try {
@@ -12,12 +12,13 @@ export async function listAllUsers(req, res){
         res.status(500).json({"Erro":"Falha na requisição"});
     }
 }
+
 export async function createUser(req, res) {
     try {
         const newData = req.body;
-        const validateResult = createUserSchema.safeParse(newData);
-        if(!validateResult.success){
-            throw new Error(validateResult.error);
+        const validatedNewData = createUserSchema.safeParse(newData);
+        if(!validatedNewData.success){
+            throw new Error(validatedNewData.error);
         }
         const createdUser = await newUser(newData);
         res.status(201).json(createdUser);
@@ -29,7 +30,8 @@ export async function createUser(req, res) {
 export async function makeTransfer(req, res){
     try {
         const data = req.body;
-        if(!data.toAccountId || !data.value || !data.password) return res.status(400).json({"Erro": "Preencha todos os dados obrigatórios!"});
+        const validatedData = transferSchema.safeParse(data);
+        console.log(validatedData);
         const { userAccountId } = req.dataCurrentUser;
         const atualizedData = {
             userAccountId: userAccountId.id,
