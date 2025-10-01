@@ -17,14 +17,14 @@ export default function transfer(data) {
       throw new Error("Senha da conta incorreta!!");
     }
 
-    const operation = parseFloat(from.balance) - value;
-    if (operation < 0) {
+    const subtraction = parseFloat(from.balance) - value;
+    if (subtraction < 0) {
       throw new Error(`Não existe saldo suficiente para mandar o valor $${value}`);
     }
     
     const fromUpdate= await tx.account.update({
       data: {
-        balance: operation
+        balance: subtraction
       },
       where: {id: userAccountId}
     });
@@ -33,12 +33,10 @@ export default function transfer(data) {
         where: {id: toAccountId}
     });
     
-    const total = parseFloat(to.balance) + value;
-    const totalNumber = Number(total);
-  
+    const addition = parseFloat(to.balance) + value;
     const toUpdate = await tx.account.update({
       data: {
-        balance: totalNumber
+        balance: addition
       },
       where: {id: toAccountId}
     });
