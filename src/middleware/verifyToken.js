@@ -3,7 +3,8 @@ dotenv.config();
 import jwt from "jsonwebtoken";
 
 const verifyToken = (req, res, next) =>{
-    const token = req.headers["authorization"];
+    const authHeader = req.headers["authorization"];
+    const token = authHeader?.split(" ")[1];
     if(!token) return res.status(403).json({"message": "Token não fornecido."});
 
     jwt.verify(token, process.env.SECRET_KEY, (err, dataCurrentUser)=>{
