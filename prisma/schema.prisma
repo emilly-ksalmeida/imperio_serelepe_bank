@@ -8,13 +8,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Teste {
-  id        String  @id @default(uuid())
-  nome      String
-  sobrenome String?
-  idade     Int
-}
-
 model Users {
   id String @id @default(uuid())
   name String @db.VarChar(70)
