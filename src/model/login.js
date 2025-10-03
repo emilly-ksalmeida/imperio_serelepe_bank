@@ -37,5 +37,5 @@ export default async function login(userData) {
     { expiresIn: process.env.TOKEN_EXP }
   );
 
-  return `Olá ${username}, login feito com sucesso. Seu token: ${token}`;
+  return {username: username, token: token};
 }
