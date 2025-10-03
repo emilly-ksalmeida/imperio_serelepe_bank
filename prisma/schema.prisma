@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Teste {
+  id        String  @id @default(uuid())
+  nome      String
+  sobrenome String?
+  idade     Int
+}
+
+model Users {
+  id String @id @default(uuid())
+  name String @db.VarChar(70)
+  username String @unique @db.VarChar(20)
+  passwordHash String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  account Account?
+}
+
+model Account {
+  id String @id @default(nanoid(4))
+  balance Decimal @db.Decimal(20,2) @default(0)
+  accountPasswordHash String
+  idUser String @unique
+  owner Users @relation(fields: [idUser], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  transfers Transfers[]
+}
+
+model Transfers {
+  id String @id @default(uuid())
+  value Decimal @db.Decimal(20,2)
+  createdAt DateTime @default(now())
+  sender Account @relation(fields: [fromId], references: [id])
+  fromId String
+  toId String
+}
