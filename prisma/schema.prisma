@@ -9,31 +9,38 @@ datasource db {
 }
 
 model Users {
-  id String @id @default(uuid())
-  name String @db.VarChar(70)
-  username String @unique @db.VarChar(20)
+  id           String    @id @default(uuid())
+  name         String    @db.VarChar(70)
+  username     String    @unique @db.VarChar(20)
   passwordHash String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  account Account?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  account      Accounts?
 }
 
-model Account {
-  id String @id @default(nanoid(4))
-  balance Decimal @db.Decimal(20,2) @default(0)
+model Accounts {
+  id                  String      @id(map: "Account_pkey") @default(nanoid(4))
+  balance             Decimal     @default(0) @db.Decimal(20, 2)
   accountPasswordHash String
-  idUser String @unique
-  owner Users @relation(fields: [idUser], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  transfers Transfers[]
+  idUser              String      @unique(map: "Account_idUser_key")
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+  owner               Users       @relation(fields: [idUser], references: [id], map: "Account_idUser_fkey")
+  transfers           Transfers[]
 }
 
 model Transfers {
-  id String @id @default(uuid())
-  value Decimal @db.Decimal(20,2)
+  id        String   @id @default(uuid())
+  value     Decimal  @db.Decimal(20, 2)
   createdAt DateTime @default(now())
-  sender Account @relation(fields: [fromId], references: [id])
-  fromId String
-  toId String
+  fromId    String
+  toId      String
+  sender    Accounts @relation(fields: [fromId], references: [id])
+}
+
+model Teste {
+  id        String  @id
+  nome      String
+  sobrenome String?
+  idade     Int
 }
