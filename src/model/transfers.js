@@ -52,6 +52,6 @@ export default function transfer(data) {
       },
     });
 
-    return "Transferência realizada com sucesso!";
+    return registerTransfer;
   });
 }
