@@ -15,12 +15,12 @@ export default async function newUser(data) {
         passwordHash,
       },
     });
-    const newAccount = await tx.account.create({
+    const newAccount = await tx.accounts.create({
       data: {
         accountPasswordHash,
         idUser: newUser.id,
       },
     });
-    return `Usuário ${name} criado com sucesso (id ${newUser.id}), seu número de conta é: ${newAccount.id}`;
+    return { name: name, userId: newUser.id, numberAccount: newAccount.id };
   });
 }

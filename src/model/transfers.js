@@ -7,7 +7,7 @@ export default function transfer(data) {
     throw new Error("Não é possível realizar esta transferência.");
   }
   return prisma.$transaction(async (tx) => {
-    const from = await tx.account.findUnique({
+    const from = await tx.accounts.findUnique({
       where: { id: userAccountId },
     });
 
@@ -26,19 +26,19 @@ export default function transfer(data) {
       );
     }
 
-    const fromUpdate = await tx.account.update({
+    const fromUpdate = await tx.accounts.update({
       data: {
         balance: subtraction,
       },
       where: { id: userAccountId },
     });
 
-    const to = await tx.account.findUnique({
+    const to = await tx.accounts.findUnique({
       where: { id: toAccountId },
     });
 
     const addition = parseFloat(to.balance) + value;
-    const toUpdate = await tx.account.update({
+    const toUpdate = await tx.accounts.update({
       data: {
         balance: addition,
       },

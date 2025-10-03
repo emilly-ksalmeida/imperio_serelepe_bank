@@ -21,7 +21,7 @@ export default async function login(userData) {
     throw new Error("Nome de usuário ou senha inválidos!");
   }
 
-  const userAccountId = await prisma.account.findUnique({
+  const userAccountId = await prisma.accounts.findUnique({
     where: { idUser: user.id },
     select: { id: true },
   });
