@@ -9,13 +9,15 @@ datasource db {
 }
 
 model Users {
-  id           String    @id @default(uuid())
-  name         String    @db.VarChar(70)
-  username     String    @unique @db.VarChar(20)
-  passwordHash String
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  account      Accounts?
+  id               String    @id @default(uuid())
+  name             String    @db.VarChar(70)
+  username         String    @unique @db.VarChar(20)
+  passwordHash     String
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  securityAnswer   String
+  securityQuestion String    @db.VarChar(100)
+  account          Accounts?
 }
 
 model Accounts {
@@ -36,11 +38,4 @@ model Transfers {
   fromId    String
   toId      String
   sender    Accounts @relation(fields: [fromId], references: [id])
-}
-
-model Teste {
-  id        String  @id
-  nome      String
-  sobrenome String?
-  idade     Int
 }
