@@ -34,6 +34,11 @@ export const createUserSchema = z.object({
     .length(4)
     .nonempty("A senha de conta é obrigatória.")
     .regex(/^[0-9]+$/, "A senha deve conter apenas números."),
+  securityQuestion: z
+    .string()
+    .max(100),
+  securityAnswer: z
+    .string(),
 });
 
 export const loginSchema = z.object({

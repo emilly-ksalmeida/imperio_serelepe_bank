@@ -21,7 +21,7 @@ export default async function login(userData) {
     throw new Error("Nome de usuário ou senha inválidos!");
   }
 
-  const userAccountId = await prisma.account.findUnique({
+  const userAccountId = await prisma.accounts.findUnique({
     where: { idUser: user.id },
     select: { id: true },
   });
@@ -37,5 +37,5 @@ export default async function login(userData) {
     { expiresIn: process.env.TOKEN_EXP }
   );
 
-  return `Olá ${username}, login feito com sucesso. Seu token: ${token}`;
+  return {username: username, token: token};
 }
