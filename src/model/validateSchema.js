@@ -73,3 +73,25 @@ export const transferSchema = z.object({
     .nonempty("A senha de conta é obrigatória.")
     .regex(/^[0-9]+$/, "Senha da conta inválida."),
 });
+
+export const resetUserSchema = z.object({
+  currentUsername: z
+    .string()
+    .min(3)
+    .max(20)
+    .nonempty("Nome de Usuário é obrigatório.")
+    .regex(
+      /^[a-zA-Z0-9._]+$/,
+      "Dados inválidos."
+    ), 
+  answer: z
+    .string()
+    .max(100)
+    .nonempty("A resposta secreta é obrigatória."),
+  newPassword: z
+    .string()
+    .min(4)
+    .max(8)
+    .nonempty("Uma nova senha deve ser fornecida.")
+    .regex(/^[0-9]+$/, "A senha deve conter apenas números."),
+});

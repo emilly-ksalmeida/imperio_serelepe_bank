@@ -2,6 +2,7 @@ import {
   createUserSchema,
   loginSchema,
   transferSchema,
+  resetUserSchema
 } from "../model/validateSchema.js";
 import {
   list,
@@ -97,12 +98,16 @@ export async function getUserSecurityQuestion(req, res) {
     res.status(200).json(question);
   } catch (erro) {
     console.error(erro.message);
-    res.status(403).json({ Erro: "Falha na requisição" });
+    res.status(404).json({ Erro: "Falha na requisição" });
   }
 }
 export async function userResetPassword(req, res) {
   try {
     const dataRecovery = req.body;
+    const validatedDataRecovery = resetUserSchema.safeParse(dataRecovery);
+    if (!validatedDataRecovery.success) {
+      throw new Error(validatedDataRecovery.error);
+    }
     const question = await resetPassword(dataRecovery);
     res.status(200).json(question);
   } catch (erro) {
