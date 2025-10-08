@@ -2,12 +2,14 @@ import {
   createUserSchema,
   loginSchema,
   transferSchema,
+  resetUserSchema
 } from "../model/validateSchema.js";
 import {
   list,
   getBalanceById,
   generateAccountStatement,
 } from "../model/listUsers.js";
+import { getSecurityQuestion, resetPassword } from "../model/userRecovery.js";
 import newUser from "../model/newUser.js";
 import transfer from "../model/transfers.js";
 import login from "../model/login.js";
@@ -65,7 +67,7 @@ export async function makeTransfer(req, res) {
     res.status(201).json(result);
   } catch (erro) {
     console.error(erro);
-    res.status(500).json({ Erro: erro.message });
+    res.status(422).json({ Erro: erro.message });
   }
 }
 export async function getBalance(req, res) {
@@ -86,5 +88,30 @@ export async function getStatement(req, res) {
   } catch (erro) {
     console.error(erro.message);
     res.status(500).json({ Erro: "Falha na requisição" });
+  }
+}
+
+export async function getUserSecurityQuestion(req, res) {
+  try {
+    const currentUsername = req.params.currentUsername;
+    const question = await getSecurityQuestion(currentUsername);
+    res.status(200).json(question);
+  } catch (erro) {
+    console.error(erro.message);
+    res.status(404).json({ Erro: "Falha na requisição" });
+  }
+}
+export async function userResetPassword(req, res) {
+  try {
+    const dataRecovery = req.body;
+    const validatedDataRecovery = resetUserSchema.safeParse(dataRecovery);
+    if (!validatedDataRecovery.success) {
+      throw new Error(validatedDataRecovery.error);
+    }
+    const question = await resetPassword(dataRecovery);
+    res.status(200).json(question);
+  } catch (erro) {
+    console.error(erro.message);
+    res.status(400).json({ Erro: "Falha na requisição, dados inválidos" });
   }
 }
