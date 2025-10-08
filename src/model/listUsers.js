@@ -14,7 +14,8 @@ export async function getBalanceById(accountId) {
 }
 
 export async function generateAccountStatement(userId) {
-  const statement = await prisma.transfers.findMany({
+    const statement = await prisma.transfers.findMany({
+    take: 8,
     where: {
       OR: [{ fromId: userId }, { toId: userId }],
     },
