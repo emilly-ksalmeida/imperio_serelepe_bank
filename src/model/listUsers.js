@@ -35,5 +35,5 @@ export async function addDetailsTransfer(toAccountId){
     },
     where: { id: toAccountId}
   })
-  console.log(details);
+  return details;
 }
