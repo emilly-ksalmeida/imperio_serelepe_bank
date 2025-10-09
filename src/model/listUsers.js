@@ -22,3 +22,18 @@ export async function generateAccountStatement(userId) {
   });
   return statement;
 }
+
+export async function addDetailsTransfer(toAccountId){
+  const details = await prisma.accounts.findUnique({
+    select: {
+      owner: {
+        select: {
+          name: true,
+          username: true
+        }
+      }
+    },
+    where: { id: toAccountId}
+  })
+  console.log(details);
+}
