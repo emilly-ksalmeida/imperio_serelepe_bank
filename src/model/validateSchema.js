@@ -3,8 +3,8 @@ import { z } from "zod";
 export const createUserSchema = z.object({
   name: z
     .string()
-    .min(2)
-    .max(70)
+    .min(2, "Nome deve ter no mínimo 2 caracteres.")
+    .max(70, "Nome deve ter no máximo 70 caracteres.")
     .nonempty("Nome é obrigatório.")
     .regex(
       /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/,
@@ -16,8 +16,8 @@ export const createUserSchema = z.object({
     ),
   username: z
     .string()
-    .min(3)
-    .max(20)
+    .min(3, "Username deve ter no mínimo 3 caracteres.")
+    .max(20, "Username deve ter no máximo 20 caracteres.")
     .nonempty("Nome de Usuário é obrigatório.")
     .regex(
       /^[a-zA-Z0-9._]+$/,
@@ -25,48 +25,49 @@ export const createUserSchema = z.object({
     ),
   password: z
     .string()
-    .min(4)
-    .max(8)
+    .min(4, "A senha deve ter no mínimo 4 dígitos.")
+    .max(8, "A senha deve ter no máximo 8 dígitos.")
     .nonempty("A senha de login é obrigatória.")
     .regex(/^[0-9]+$/, "A senha deve conter apenas números."),
   accountPassword: z
     .string()
-    .length(4)
+    .length(4, "A senha da conta precisa ter 4 dígitos.")
     .nonempty("A senha de conta é obrigatória.")
     .regex(/^[0-9]+$/, "A senha deve conter apenas números."),
   securityQuestion: z
     .string()
     .nonempty("A pergunta secreta é obrigatória.")
-    .max(100),
+    .max(100, "Quantidade máxima de caracteres  é 100."),
   securityAnswer: z
     .string()
-    .max(100)
+    .max(100, "Quantidade máxima de caracteres  é 100.")
     .nonempty("A resposta secreta é obrigatória."),
 });
 
 export const loginSchema = z.object({
   username: z
     .string()
-    .min(3)
-    .max(20)
+    .min(3, "Dados inválidos.")
+    .max(20, "Dados inválidos.")
     .nonempty("Nome de Usuário é obrigatório.")
-    .regex(/^[a-zA-Z0-9._]+$/, "Username inválido."),
+    .regex(/^[a-zA-Z0-9._]+$/, "Dados inválidos."),
   password: z
     .string()
-    .min(4)
-    .max(8)
+    .min(4, "Dados inválidos.")
+    .max(8, "Dados inválidos.")
     .nonempty("A senha de login é obrigatória.")
-    .regex(/^[0-9]+$/, "Senha inválida."),
+    .regex(/^[0-9]+$/, "Dados inválidos."),
 });
 
 export const transferSchema = z.object({
-  toAccountId: z.string().length(4).nonempty("Nome de Usuário é obrigatório."),
+  toAccountId: z.string().length(4, "Código da conta inválido.").nonempty("Nome de Usuário é obrigatório."),
   value: z.preprocess((val) => {
     if (typeof val === "string" && /^\d+(\.00|\.\d{2})?$/.test(val)) {
       return Number.parseFloat(val);
     }
     return val;
-  }, z.number("O valor precisa ter duas casas decimais.").gte(0.01, "O valor mínimo é 0.01.")),
+  }, z.number("O valor precisa ter duas casas decimais."), z.gte(1, "O valor mínimo é 1."))
+  ,
   accountPassword: z
     .string()
     .length(4, "Senha da conta inválida.")
@@ -90,8 +91,8 @@ export const resetUserSchema = z.object({
     .nonempty("A resposta secreta é obrigatória."),
   newPassword: z
     .string()
-    .min(4)
-    .max(8)
+    .min(4, "A senha deve ter no mínimo 4 dígitos.")
+    .max(8, "A senha deve ter no máximo 8 dígitos.")
     .nonempty("Uma nova senha deve ser fornecida.")
     .regex(/^[0-9]+$/, "A senha deve conter apenas números."),
 });
