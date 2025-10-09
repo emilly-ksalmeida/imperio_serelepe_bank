@@ -52,16 +52,22 @@ export const loginSchema = z.object({
 });
 
 export const transferSchema = z.object({
-  toAccountId: z.string().length(4).nonempty("Nome de Usuário é obrigatório."),
-  value: z.preprocess((val) => {
-    if (typeof val === "string" && /^\d+(\.00|\.\d{2})?$/.test(val)) {
-      return Number.parseFloat(val);
-    }
-    return val;
-  }, z.number("O valor precisa ter duas casas decimais.").gte(0.01, "O valor mínimo é 0.01.")),
-  accountPassword: z
+  toAccountId: z
     .string()
-    .length(4, "Senha da conta inválida.")
-    .nonempty("A senha de conta é obrigatória.")
-    .regex(/^[0-9]+$/, "Senha da conta inválida."),
-});
+    .length(4, "Código da conta inválido.")
+    .nonempty("Nome de Usuário é obrigatório.")
+  ,
+  value: z
+    .string()
+    .nonempty("O valor é obrigatório")
+    .refine(val => !val.includes(" "), {
+      error: "O valor não pode conter espaços."
+    })
+    .refine(val => /^\d+(\.00|\.0|\.\d{2})?$/.test(val), {
+      error: "O valor precisa numérico com duas casas decimais.",
+    })
+    .transform(val => Number.parseFloat(val))
+    .refine(val => val >= 1, {
+      error: "O valor mínimo para transferências é 1.00",
+    })
+  })
