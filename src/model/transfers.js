@@ -7,7 +7,7 @@ export default function transfer(data) {
     throw new Error("Não é possível realizar esta transferência.");
   }
   return prisma.$transaction(async (tx) => {
-    const from = await tx.account.findUnique({
+    const from = await tx.accounts.findUnique({
       where: { id: userAccountId },
     });
 
@@ -19,26 +19,26 @@ export default function transfer(data) {
       throw new Error("Senha da conta incorreta!!");
     }
 
-    const subtraction = parseFloat(from.balance) - value;
+    const subtraction = parseFloat(from.balance) - parseFloat(value);
     if (subtraction < 0) {
       throw new Error(
         `Não existe saldo suficiente para mandar o valor $${value}`
       );
     }
 
-    const fromUpdate = await tx.account.update({
+    const fromUpdate = await tx.accounts.update({
       data: {
         balance: subtraction,
       },
       where: { id: userAccountId },
     });
 
-    const to = await tx.account.findUnique({
+    const to = await tx.accounts.findUnique({
       where: { id: toAccountId },
     });
 
-    const addition = parseFloat(to.balance) + value;
-    const toUpdate = await tx.account.update({
+    const addition = parseFloat(to.balance) + parseFloat(value);
+    const toUpdate = await tx.accounts.update({
       data: {
         balance: addition,
       },
@@ -52,6 +52,6 @@ export default function transfer(data) {
       },
     });
 
-    return "Transferência realizada com sucesso!";
+    return registerTransfer;
   });
 }

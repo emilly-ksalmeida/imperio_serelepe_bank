@@ -6,7 +6,7 @@ export async function list() {
 }
 
 export async function getBalanceById(accountId) {
-  const userBalance = await prisma.account.findUnique({
+  const userBalance = await prisma.accounts.findUnique({
     where: { id: accountId },
     select: { balance: true },
   });
