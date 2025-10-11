@@ -37,5 +37,5 @@ export default async function login(userData) {
     { expiresIn: process.env.TOKEN_EXP }
   );
 
-  return {username: username, token: token};
+  return {username: username, token: token, accountId: userAccountId.id};
 }
