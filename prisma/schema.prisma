@@ -28,7 +28,9 @@ model Accounts {
   createdAt           DateTime    @default(now())
   updatedAt           DateTime    @updatedAt
   owner               Users       @relation(fields: [idUser], references: [id], map: "Account_idUser_fkey")
-  transfers           Transfers[]
+
+  sentTransfers Transfers[] @relation("FromAccount")
+  receivedTransfers Transfers[] @relation("ToAccount")
 }
 
 model Transfers {
@@ -37,5 +39,10 @@ model Transfers {
   createdAt DateTime @default(now())
   fromId    String
   toId      String
-  sender    Accounts @relation(fields: [fromId], references: [id])
+
+  fromAccount Accounts @relation("FromAccount", fields: [fromId], references: [id])
+  toAccount  Accounts @relation("ToAccount", fields: [toId], references: [id])
+
+  @@index([fromId])
+  @@index([toId])
 }
