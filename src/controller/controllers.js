@@ -15,16 +15,6 @@ import newUser from "../model/newUser.js";
 import transfer from "../model/transfers.js";
 import login from "../model/login.js";
 
-export async function listAllUsers(req, res) {
-  try {
-    const data = await list();
-    res.status(200).json(data);
-  } catch (erro) {
-    console.error(erro.message);
-    res.status(400).json({ Erro: "Falha na requisição" });
-  }
-}
-
 export async function createUser(req, res) {
   try {
     const newData = req.body;
