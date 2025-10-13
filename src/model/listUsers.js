@@ -14,12 +14,49 @@ export async function getBalanceById(accountId) {
 }
 
 export async function generateAccountStatement(userId) {
-    const statement = await prisma.transfers.findMany({
+  const statements = await prisma.transfers.findMany({
     take: 8,
     where: {
       OR: [{ fromId: userId }, { toId: userId }],
     },
     orderBy: [{ createdAt: "desc" }],
+    select: {
+      id: true,
+      value: true,
+      createdAt: true,
+      fromAccount: {
+        select: {
+          id: true,
+          owner: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+      toAccount: {
+        select: {
+          id: true,
+          owner: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      }
+    }
   });
-  return statement;
+
+
+  return statements.map(statement => {
+    return {
+      value: statement.value,
+      createdAt: statement.createdAt,
+      fromAccountName: statement.fromAccount.owner.name,
+      toAccountName: statement.toAccount.owner.name,
+      fromAccountId: statement.fromAccount.id,
+      toAccountId: statement.toAccount.id,
+      received: statement.toId === userId
+    }
+  });
 }
