@@ -6,7 +6,6 @@ import {
   resetUserSchema
 } from "../model/validateSchema.js";
 import {
-  list,
   getBalanceById,
   generateAccountStatement,
 } from "../model/listUsers.js";
