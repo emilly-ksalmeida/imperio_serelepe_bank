@@ -1,10 +1,5 @@
 import prisma from "./db.js";
 
-export async function list() {
-  const allUsers = await prisma.users.findMany();
-  return allUsers;
-}
-
 export async function getBalanceById(accountId) {
   const userBalance = await prisma.accounts.findUnique({
     where: { id: accountId },
