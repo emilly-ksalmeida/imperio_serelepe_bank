@@ -51,7 +51,7 @@ export async function generateAccountStatement(userId) {
       toAccountName: statement.toAccount.owner.name,
       fromAccountId: statement.fromAccount.id,
       toAccountId: statement.toAccount.id,
-      received: statement.toId === userId
+      received: statement.toAccount.id === userId
     }
   });
 }
