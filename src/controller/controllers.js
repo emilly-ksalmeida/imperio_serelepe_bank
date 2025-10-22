@@ -4,7 +4,7 @@ import {
   createUserSchema,
   loginSchema,
   transferSchema,
-  resetUserSchema
+  resetUserSchema,
 } from "../model/validateSchema.js";
 import {
   getBalanceById,
@@ -22,23 +22,20 @@ export async function createUser(req, res) {
     if (!validatedNewData.success) {
       const pretty = z.prettifyError(validatedNewData.error);
       throw new Error(pretty);
-      //throw new Error(validatedNewData.error);
-      //throw validatedNewData.error;
     }
     const createdUser = await newUser(newData);
     res.status(201).json(createdUser);
   } catch (erro) {
-  
-    if(erro instanceof prismaTeste.PrismaClientKnownRequestError){
-      if(erro.code === "P2002"){
-        return res.status(422).json({Erro: "Este username já existe, escolha outro username!"});
+    if (erro instanceof prismaTeste.PrismaClientKnownRequestError) {
+      if (erro.code === "P2002") {
+        return res
+          .status(422)
+          .json({ Erro: "Este username já existe, escolha outro username!" });
       }
-      return res.status(422).json({Erro: "Falha ao cadastrar, tente novamente!"});
+      return res
+        .status(422)
+        .json({ Erro: "Falha ao cadastrar, tente novamente!" });
     }
-    
-    // if(erro instanceof z.core.$ZodError){
-    //   return res.status(422).json({ Erro: "Erro de validacao" });
-    // }
     res.status(422).json({ Erro: erro.message });
   }
 }
@@ -114,7 +111,7 @@ export async function userResetPassword(req, res) {
   try {
     const dataRecovery = req.body;
     const validatedDataRecovery = resetUserSchema.safeParse(dataRecovery);
-    if (!validatedDataRecovery.success){
+    if (!validatedDataRecovery.success) {
       const pretty = z.prettifyError(validatedDataRecovery.error);
       throw new Error(pretty);
     }
