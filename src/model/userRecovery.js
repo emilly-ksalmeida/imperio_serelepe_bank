@@ -1,5 +1,5 @@
 import bcryptjs from "bcryptjs";
-import prisma from "./db.js";
+import {prisma} from "./db.js";
 
 export async function getSecurityQuestion(currentUsername) {
   const userSecurityQuestion = await prisma.users.findUnique({

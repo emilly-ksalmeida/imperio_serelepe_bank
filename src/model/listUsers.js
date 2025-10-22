@@ -1,4 +1,4 @@
-import prisma from "./db.js";
+import {prisma} from "./db.js";
 
 export async function getBalanceById(accountId) {
   const userBalance = await prisma.accounts.findUnique({

@@ -1,5 +1,5 @@
 import bcryptjs from "bcryptjs";
-import prisma from "./db.js";
+import {prisma} from "./db.js";
 
 export default function transfer(data) {
   const { userAccountId, toAccountId, value, accountPassword } = data;
