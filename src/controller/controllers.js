@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { prismaTeste } from "../model/db.js";
 import {
   createUserSchema,
   loginSchema,
@@ -21,11 +22,23 @@ export async function createUser(req, res) {
     if (!validatedNewData.success) {
       const pretty = z.prettifyError(validatedNewData.error);
       throw new Error(pretty);
+      //throw new Error(validatedNewData.error);
+      //throw validatedNewData.error;
     }
     const createdUser = await newUser(newData);
     res.status(201).json(createdUser);
   } catch (erro) {
-    console.error(erro.message);
+  
+    if(erro instanceof prismaTeste.PrismaClientKnownRequestError){
+      if(erro.code === "P2002"){
+        return res.status(422).json({Erro: "Este username já existe, escolha outro username!"});
+      }
+      return res.status(422).json({Erro: "Falha ao cadastrar, tente novamente!"});
+    }
+    
+    // if(erro instanceof z.core.$ZodError){
+    //   return res.status(422).json({ Erro: "Erro de validacao" });
+    // }
     res.status(422).json({ Erro: erro.message });
   }
 }
