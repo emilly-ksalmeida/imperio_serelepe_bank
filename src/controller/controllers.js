@@ -26,7 +26,7 @@ export async function createUser(req, res) {
     res.status(201).json(createdUser);
   } catch (erro) {
     console.error(erro.message);
-    res.status(401).json({ Erro: erro.message });
+    res.status(422).json({ Erro: erro.message });
   }
 }
 
