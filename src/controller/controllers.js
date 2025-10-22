@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { prismaTeste } from "../model/db.js";
+import { prismaImport } from "../model/db.js";
 import {
   createUserSchema,
   loginSchema,
@@ -26,7 +26,7 @@ export async function createUser(req, res) {
     const createdUser = await newUser(newData);
     res.status(201).json(createdUser);
   } catch (erro) {
-    if (erro instanceof prismaTeste.PrismaClientKnownRequestError) {
+    if (erro instanceof prismaImport.PrismaClientKnownRequestError) {
       if (erro.code === "P2002") {
         return res
           .status(422)
