@@ -30,11 +30,11 @@ export async function createUser(req, res) {
       if (erro.code === "P2002") {
         return res
           .status(422)
-          .json({ Erro: "Este username já existe, escolha outro username!" });
+          .json({ Erro: "Você não pode usar esse username, escolha outro." });
       }
       return res
         .status(422)
-        .json({ Erro: "Falha ao cadastrar, tente novamente!" });
+        .json({ Erro: "Falha ao cadastrar, tente novamente." });
     }
     res.status(422).json({ Erro: erro.message });
   }
