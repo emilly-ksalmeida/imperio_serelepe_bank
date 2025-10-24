@@ -1,5 +1,5 @@
 import bcryptjs from "bcryptjs";
-import prisma from "./db.js";
+import {prisma} from "./db.js";
 
 export default async function newUser(data) {
   const { name, username, password, accountPassword, securityQuestion, securityAnswer } = data;

@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import jwt from "jsonwebtoken";
 import bcryptjs from "bcryptjs";
-import prisma from "../model/db.js";
+import {prisma} from "../model/db.js";
 
 export default async function login(userData) {
   const { username, password } = userData;

@@ -1,9 +1,10 @@
 import { z } from "zod";
+import { prismaImport } from "../model/db.js";
 import {
   createUserSchema,
   loginSchema,
   transferSchema,
-  resetUserSchema
+  resetUserSchema,
 } from "../model/validateSchema.js";
 import {
   getBalanceById,
@@ -25,8 +26,17 @@ export async function createUser(req, res) {
     const createdUser = await newUser(newData);
     res.status(201).json(createdUser);
   } catch (erro) {
-    console.error(erro.message);
-    res.status(401).json({ Erro: erro.message });
+    if (erro instanceof prismaImport.PrismaClientKnownRequestError) {
+      if (erro.code === "P2002") {
+        return res
+          .status(422)
+          .json({ Erro: "Você não pode usar esse username, escolha outro." });
+      }
+      return res
+        .status(422)
+        .json({ Erro: "Falha ao cadastrar, tente novamente." });
+    }
+    res.status(422).json({ Erro: erro.message });
   }
 }
 
@@ -101,7 +111,7 @@ export async function userResetPassword(req, res) {
   try {
     const dataRecovery = req.body;
     const validatedDataRecovery = resetUserSchema.safeParse(dataRecovery);
-    if (!validatedDataRecovery.success){
+    if (!validatedDataRecovery.success) {
       const pretty = z.prettifyError(validatedDataRecovery.error);
       throw new Error(pretty);
     }
