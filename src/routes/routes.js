@@ -1,6 +1,6 @@
 import express from "express";
 import verifyToken from "../middleware/verifyToken.js";
-import { createUser, loginUser, makeTransfer, getBalance, getStatement, getUserSecurityQuestion, userResetPassword } from "../controller/controllers.js";
+import { createUser, loginUser, makeTransfer, getBalance, getStatement, getUserSecurityQuestion, userResetPassword, validateSecretAnswer } from "../controller/controllers.js";
 
 const routes = (app) => {
     app.use(express.urlencoded({ extended: true }));
@@ -17,6 +17,8 @@ const routes = (app) => {
     app.post("/create-user", createUser);
 
     app.post("/make-transfer", verifyToken, makeTransfer);
+
+    app.post("/validate-secret-answer", validateSecretAnswer);
 
     app.patch("/reset-password", userResetPassword);
 
