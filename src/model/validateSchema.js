@@ -95,14 +95,15 @@ export const resetUserSchema = z.object({
       /^[a-zA-Z0-9._]+$/,
       "Dados inválidos."
     ),
-  answer: z
-    .string()
-    .max(100)
-    .nonempty("A resposta secreta é obrigatória."),
   newPassword: z
     .string()
     .min(4, "A senha deve ter no mínimo 4 dígitos.")
     .max(8, "A senha deve ter no máximo 8 dígitos.")
-    .nonempty("Uma nova senha deve ser fornecida.")
+    .nonempty("A senha de login é obrigatória.")
+    .regex(/^[0-9]+$/, "A senha deve conter apenas números."),
+  newAccountPassword: z
+    .string()
+    .length(4, "A senha da conta precisa ter 4 dígitos.")
+    .nonempty("A senha de conta é obrigatória.")
     .regex(/^[0-9]+$/, "A senha deve conter apenas números."),
 });
