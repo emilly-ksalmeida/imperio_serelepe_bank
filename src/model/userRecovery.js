@@ -6,6 +6,9 @@ export async function getSecurityQuestion(currentUsername) {
     where: { username: currentUsername },
     select: { securityQuestion: true },
   });
+  if(!userSecurityQuestion){
+    throw new Error("Nome de usuário inválido ou não informado!");
+  }
   return userSecurityQuestion;
 }
 
@@ -15,21 +18,13 @@ export async function validateAnswer(currentUsername, answer){
     select: { securityAnswer: true },
   });
   const checkAnswer = await bcryptjs.compare(answer, dbUserSecurityAnswer.securityAnswer);
-  if (!checkAnswer) {
-    throw new Error("Resposta inválida.");
-  } else {
-    return checkAnswer;
-  }
+  return checkAnswer;
 }
-
 
 export async function resetPassword(data) {
   const { currentUsername, newPassword, newAccountPassword } = data;
-
   const newPasswordHash = await bcryptjs.hash(newPassword, 10);
   const newAccountPasswordHash = await bcryptjs.hash(newAccountPassword, 10);
-
-  //update no banco
   const dataUpdate = await prisma.users.update({
     where: {
       username: currentUsername,

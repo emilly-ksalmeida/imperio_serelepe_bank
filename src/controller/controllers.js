@@ -112,24 +112,27 @@ export async function validateSecretAnswer(req, res) {
   try{
     const {currentUsername, answer} = req.body;
     const result = await validateAnswer(currentUsername, answer);
+    if(!result){
+      throw new Error("Resposta inválida.");
+    }
     res.status(200).json(result);
 
   }catch (erro) {
     console.error(erro.message);
-    res.status(400).json({ Erro: erro.message });
+    res.status(401).json({ Erro: erro.message });
   }
 }
 
 export async function userResetPassword(req, res) {
   try {
     const dataRecovery = req.body;
-    // const validatedDataRecovery = resetUserSchema.safeParse(dataRecovery);
-    // if (!validatedDataRecovery.success) {
-    //   const pretty = z.prettifyError(validatedDataRecovery.error);
-    //   throw new Error(pretty);
-    // }
+    const validatedDataRecovery = resetUserSchema.safeParse(dataRecovery);
+    if (!validatedDataRecovery.success) {
+      const pretty = z.prettifyError(validatedDataRecovery.error);
+      throw new Error(pretty);
+    }
     const resetResult = await resetPassword(dataRecovery);
-    res.status(200).json(question);
+    res.status(200).json(resetResult);
   } catch (erro) {
     console.error(erro.message);
     res.status(400).json({ Erro: erro.message });
