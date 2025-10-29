@@ -6,33 +6,41 @@ export async function getSecurityQuestion(currentUsername) {
     where: { username: currentUsername },
     select: { securityQuestion: true },
   });
+  if(!userSecurityQuestion){
+    throw new Error("Nome de usuário inválido ou não informado!");
+  }
   return userSecurityQuestion;
 }
 
-export async function resetPassword(data) {
-  const { currentUsername, answer, newPassword } = data;
-
-  const userSecurityAnswer = await prisma.users.findUnique({
+export async function validateAnswer(currentUsername, answer){
+  const dbUserSecurityAnswer = await prisma.users.findUnique({
     where: { username: currentUsername },
     select: { securityAnswer: true },
   });
-  if (!userSecurityAnswer) {
-    throw new Error("Dados inválidos!");
-  }
+  const checkAnswer = await bcryptjs.compare(answer, dbUserSecurityAnswer.securityAnswer);
+  return checkAnswer;
+}
 
-  const checkAnswer = await bcryptjs.compare(answer, userSecurityAnswer.securityAnswer);
-  if (!checkAnswer) {
-    throw new Error("Dados inválidos!");
-  }
-
+export async function resetPassword(data) {
+  const { currentUsername, newPassword, newAccountPassword } = data;
   const newPasswordHash = await bcryptjs.hash(newPassword, 10);
-  const passwordUpdate = await prisma.users.update({
+  const newAccountPasswordHash = await bcryptjs.hash(newAccountPassword, 10);
+  const dataUpdate = await prisma.users.update({
     where: {
       username: currentUsername,
     },
     data: {
       passwordHash: newPasswordHash,
+      account: {
+        update: {
+          accountPasswordHash: newAccountPasswordHash
+        }
+      }
     },
+    select: {
+      username: true
+    }
   });
-  return {message: "Senha redefinida com sucesso!"};
+
+  return {message: `${dataUpdate.username}, senhas redefinidas com sucesso.`};
 }
