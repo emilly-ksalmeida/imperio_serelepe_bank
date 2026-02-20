@@ -8,11 +8,11 @@ export const createUserSchema = z.object({
     .nonempty("Nome é obrigatório.")
     .regex(
       /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/,
-      "Nome deve conter apenas letras e espaços."
+      "Nome deve conter apenas letras e espaços.",
     )
     .refine(
       (name) => name.trim().length > 0,
-      "Nome não pode conter apenas espaços."
+      "Nome não pode conter apenas espaços.",
     ),
   username: z
     .string()
@@ -21,7 +21,7 @@ export const createUserSchema = z.object({
     .nonempty("Nome de Usuário é obrigatório.")
     .regex(
       /^[a-zA-Z0-9._]+$/,
-      "Username só pode conter letras, números, . ou _, não pode conter espaços."
+      "Username só pode conter letras, números, . ou _, não pode conter espaços.",
     ),
   password: z
     .string()
@@ -63,26 +63,25 @@ export const transferSchema = z.object({
   toAccountId: z
     .string()
     .length(4, "Código da conta inválido.")
-    .nonempty("Nome de Usuário é obrigatório.")
-  ,
+    .nonempty("Nome de Usuário é obrigatório."),
   value: z
     .string()
     .nonempty("O valor é obrigatório")
-    .refine(val => !val.includes(" "), {
-      error: "O valor não pode conter espaços."
+    .refine((val) => !val.includes(" "), {
+      error: "O valor não pode conter espaços.",
     })
-    .refine(val => /^\d+(\.00|\.0|\.\d{2})?$/.test(val), {
+    .refine((val) => /^\d+(\.00|\.0|\.\d{2})?$/.test(val), {
       error: "O valor precisa numérico com duas casas decimais.",
     })
-    .transform(val => Number.parseFloat(val))
-    .refine(val => val >= 1, {
+    .transform((val) => Number.parseFloat(val))
+    .refine((val) => val >= 1, {
       error: "O valor mínimo para transferências é 1.00",
     }),
   accountPassword: z
     .string()
     .length(4, "Senha da conta inválida.")
     .nonempty("A senha de conta é obrigatória.")
-    .regex(/^[0-9]+$/, "Senha da conta inválida.")
+    .regex(/^[0-9]+$/, "Senha da conta inválida."),
 });
 
 export const resetUserSchema = z.object({
@@ -91,10 +90,7 @@ export const resetUserSchema = z.object({
     .min(3)
     .max(20)
     .nonempty("Nome de Usuário é obrigatório.")
-    .regex(
-      /^[a-zA-Z0-9._]+$/,
-      "Dados inválidos."
-    ),
+    .regex(/^[a-zA-Z0-9._]+$/, "Dados inválidos."),
   newPassword: z
     .string()
     .min(4, "A senha deve ter no mínimo 4 dígitos.")
@@ -106,4 +102,40 @@ export const resetUserSchema = z.object({
     .length(4, "A senha da conta precisa ter 4 dígitos.")
     .nonempty("A senha de conta é obrigatória.")
     .regex(/^[0-9]+$/, "A senha deve conter apenas números."),
+});
+
+export const productSchema = z.object({
+  sellerId: z.string().nonempty("ID do vendedor é obrigatório."),
+  name: z.string().nonempty("Nome do produto é obrigatório."),
+  description: z
+    .string()
+    .min(10, "A descrição do produto deve ter no mínimo 10 caracteres.")
+    .max(200, "A descrição do produto deve ter no máximo 200 caracteres.")
+    .nonempty("Descrição do produto é obrigatória."),
+  unitPrice: z
+    .string()
+    .nonempty("O valor é obrigatório")
+    .refine((val) => !val.includes(" "), {
+      error: "O valor não pode conter espaços.",
+    })
+    .refine((val) => /^\d+(\.00|\.0|\.\d{2})?$/.test(val), {
+      error: "O valor precisa ser numérico com duas casas decimais.",
+    })
+    .transform((val) => Number.parseFloat(val))
+    .refine((val) => val >= 1, {
+      error: "O valor mínimo para produtos é 1.00",
+    }),
+  stockQuantity: z
+  .string()
+  .nonempty("A quantidade em estoque é obrigatória.")
+  .refine((val) => !val.includes(" "), {
+    error: "A quantidade em estoque não pode conter espaços.",
+  })
+  .refine((val) => /^\d+$/.test(val), {
+    error: "A quantidade em estoque deve ser um número inteiro.",
+  })
+  .transform((val) => parseInt(val, 10))
+  .refine((val) => val >= 0, {
+    error: "A quantidade em estoque não pode ser negativa.",
+  }),
 });
