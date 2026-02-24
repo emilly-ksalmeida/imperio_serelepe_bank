@@ -1,6 +1,6 @@
 import express from "express";
 import verifyToken from "../middleware/verifyToken.js";
-import { createUser, loginUser, makeTransfer, getBalance, getStatement, getUserSecurityQuestion, userResetPassword, validateSecretAnswer, getProducts, createProduct } from "../controller/controllers.js";
+import { createUser, loginUser, makeTransfer, getBalance, getStatement, getUserSecurityQuestion, userResetPassword, validateSecretAnswer, getProducts, createProduct, createPurchase } from "../controller/controllers.js";
 
 const routes = (app) => {
     app.use(express.urlencoded({ extended: true }));
@@ -27,6 +27,8 @@ const routes = (app) => {
     app.get("/products", getProducts);
     
     app.post("/create-product", createProduct);
+
+    app.post("/create-purchase", verifyToken, createPurchase);
 
 }
 export default routes;
