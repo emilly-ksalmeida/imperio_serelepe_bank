@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:watch": "jest --watch",
     "start": "nodemon server.js"
   },
   "prisma": {
@@ -24,7 +25,9 @@
     "zod": "^4.1.11"
   },
   "devDependencies": {
+    "jest": "^30.2.0",
     "nodemon": "^3.1.10",
-    "prisma": "^6.15.0"
+    "prisma": "^6.15.0",
+    "supertest": "^7.2.2"
   }
 }

@@ -5,10 +5,10 @@ import { createUser, loginUser, makeTransfer, getBalance, getStatement, getUserS
 const routes = (app) => {
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
-    
+
     //Serelepepay
     app.get("/balance", verifyToken, getBalance);
-   
+
     app.get("/statement", verifyToken, getStatement);
 
     app.get("/user-recovery/:currentUsername", getUserSecurityQuestion);
@@ -25,10 +25,11 @@ const routes = (app) => {
 
     //Serelepe Market
     app.get("/products", getProducts);
-    
+
     app.post("/create-product", createProduct);
 
     app.post("/create-purchase", verifyToken, createPurchase);
 
 }
+
 export default routes;
