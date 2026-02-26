@@ -2,7 +2,20 @@ import dotenv from "dotenv";
 dotenv.config();
 import jwt from "jsonwebtoken";
 import bcryptjs from "bcryptjs";
-import {prisma} from "../model/db.js";
+import { prisma } from "../model/db.js";
+
+export function generateJWT(user, userAccountId) {
+  return jwt.sign(
+    {
+      id: user.id,
+      username: user.username,
+      name: user.name,
+      userAccountId: { id: userAccountId },
+    },
+    process.env.SECRET_KEY,
+    { expiresIn: process.env.TOKEN_EXP }
+  );
+}
 
 export default async function login(userData) {
   const { username, password } = userData;
@@ -26,16 +39,7 @@ export default async function login(userData) {
     select: { id: true },
   });
 
-  const token = jwt.sign(
-    {
-      id: user.id,
-      username: user.username,
-      name: user.name,
-      userAccountId: userAccountId,
-    },
-    process.env.SECRET_KEY,
-    { expiresIn: process.env.TOKEN_EXP }
-  );
+  const token = generateJWT(user, userAccountId.id);
 
-  return {username: username, token: token, accountId: userAccountId.id};
+  return { username: username, token: token, accountId: userAccountId.id };
 }
