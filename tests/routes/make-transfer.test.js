@@ -3,8 +3,7 @@ import express from "express"
 import routes from "../../src/routes/index.js"
 import { prisma } from "../setup/prisma-cleaner.js"
 import { generateJWT } from "../../src/model/login.js"
-import bcryptjs from "bcryptjs";
-import { faker } from "@faker-js/faker"
+import { createUserWithAccount } from "../factories/user.factory.js"
 
 describe("POST /make-transfer", () => {
   describe("when user is not logged in", () => {
@@ -19,41 +18,14 @@ describe("POST /make-transfer", () => {
   describe("creating a transfer", () => {
     describe("when the user has available balance", () => {
       it("should return 201", async () => {
-        const adan = await prisma.users.create({
-          data: {
-            name: "adan",
-            username: faker.internet.username(),
-            passwordHash: await bcryptjs.hash("1234", 10),
-            securityQuestion: "abcde",
-            securityAnswer: await bcryptjs.hash("abcde", 10),
-            role: "user"
-          }
+        const { user: adan, account: adanAccount } = await createUserWithAccount(prisma, {
+          user: { name: "adan" },
+          account: { balance: 1000 }
         })
 
-        const maria = await prisma.users.create({
-          data: {
-            name: "maria",
-            username: faker.internet.username(),
-            passwordHash: await bcryptjs.hash("1234", 10),
-            securityQuestion: "abcde",
-            securityAnswer: await bcryptjs.hash("abcde", 10),
-            role: "user"
-          }
-        })
-
-        const adanAccount = await prisma.accounts.create({
-          data: {
-            balance: 1000,
-            accountPasswordHash: await bcryptjs.hash("1234", 10),
-            idUser: adan.id
-          }
-        })
-
-        const mariaAccount = await prisma.accounts.create({
-          data: {
-            accountPasswordHash: await bcryptjs.hash("1234", 10),
-            idUser: maria.id
-          }
+        const { user: maria, account: mariaAccount } = await createUserWithAccount(prisma, {
+          user: { name: "maria" },
+          account: {}
         })
 
         const token = await generateJWT(adan, adanAccount.id)
@@ -80,41 +52,14 @@ describe("POST /make-transfer", () => {
       })
 
       it("should create transfers and update balances", async () => {
-        const adan = await prisma.users.create({
-          data: {
-            name: "adan",
-            username: faker.internet.username(),
-            passwordHash: await bcryptjs.hash("1234", 10),
-            securityQuestion: "abcde",
-            securityAnswer: await bcryptjs.hash("abcde", 10),
-            role: "user"
-          }
+        const { user: adan, account: adanAccount } = await createUserWithAccount(prisma, {
+          user: { name: "adan" },
+          account: { balance: 1000 }
         })
 
-        const maria = await prisma.users.create({
-          data: {
-            name: "maria",
-            username: faker.internet.username(),
-            passwordHash: await bcryptjs.hash("1234", 10),
-            securityQuestion: "abcde",
-            securityAnswer: await bcryptjs.hash("abcde", 10),
-            role: "user"
-          }
-        })
-
-        const adanAccount = await prisma.accounts.create({
-          data: {
-            balance: 1000,
-            accountPasswordHash: await bcryptjs.hash("1234", 10),
-            idUser: adan.id
-          }
-        })
-
-        const mariaAccount = await prisma.accounts.create({
-          data: {
-            accountPasswordHash: await bcryptjs.hash("1234", 10),
-            idUser: maria.id
-          }
+        const { account: mariaAccount } = await createUserWithAccount(prisma, {
+          user: { name: "maria" },
+          account: {}
         })
 
         const token = await generateJWT(adan, adanAccount.id)
@@ -153,41 +98,14 @@ describe("POST /make-transfer", () => {
 
     describe("when the user does not have available balance", () => {
       it("should return 400", async () => {
-        const adan = await prisma.users.create({
-          data: {
-            name: "adan",
-            username: faker.internet.username(),
-            passwordHash: await bcryptjs.hash("1234", 10),
-            securityQuestion: "abcde",
-            securityAnswer: await bcryptjs.hash("abcde", 10),
-            role: "user"
-          }
+        const { user: adan, account: adanAccount } = await createUserWithAccount(prisma, {
+          user: { name: "adan" },
+          account: { balance: 1000 }
         })
 
-        const maria = await prisma.users.create({
-          data: {
-            name: "maria",
-            username: faker.internet.username(),
-            passwordHash: await bcryptjs.hash("1234", 10),
-            securityQuestion: "abcde",
-            securityAnswer: await bcryptjs.hash("abcde", 10),
-            role: "user"
-          }
-        })
-
-        const adanAccount = await prisma.accounts.create({
-          data: {
-            balance: 1000,
-            accountPasswordHash: await bcryptjs.hash("1234", 10),
-            idUser: adan.id
-          }
-        })
-
-        const mariaAccount = await prisma.accounts.create({
-          data: {
-            accountPasswordHash: await bcryptjs.hash("1234", 10),
-            idUser: maria.id
-          }
+        const { account: mariaAccount } = await createUserWithAccount(prisma, {
+          user: { name: "maria" },
+          account: {}
         })
 
         const token = await generateJWT(adan, adanAccount.id)

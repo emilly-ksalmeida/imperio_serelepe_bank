@@ -3,8 +3,7 @@ import express from "express"
 import routes from "../../src/routes/index.js"
 import { prisma } from "../setup/prisma-cleaner.js"
 import { generateJWT } from "../../src/model/login.js"
-import bcryptjs from "bcryptjs";
-import { faker } from "@faker-js/faker"
+import { createUser, createUserWithAccount } from "../factories/user.factory.js"
 
 describe("GET /statement", () => {
   describe("when user is not logged in", () => {
@@ -18,16 +17,7 @@ describe("GET /statement", () => {
 
   describe("when the user has not made any transactions yet", () => {
     it("should return a empty array", async () => {
-      const user = await prisma.users.create({
-        data: {
-          name: "user",
-          username: faker.internet.username(),
-          passwordHash: await bcryptjs.hash("1234", 10),
-          securityQuestion: "abcde",
-          securityAnswer: await bcryptjs.hash("abcde", 10),
-          role: "user"
-        }
-      })
+      const user = await createUser(prisma)
       const token = await generateJWT(user.id)
       const app = express()
       routes(app)
@@ -42,44 +32,17 @@ describe("GET /statement", () => {
 
   describe("when the user has made transactions", () => {
     it("should return the transactions", async () => {
-      const adan = await prisma.users.create({
-        data: {
-          name: "adan",
-          username: faker.internet.username(),
-          passwordHash: await bcryptjs.hash("1234", 10),
-          securityQuestion: "abcde",
-          securityAnswer: await bcryptjs.hash("abcde", 10),
-          role: "user"
-        }
+      const { user: adan, account: adanAccount } = await createUserWithAccount(prisma, {
+        user: { name: "adan" },
+        account: {}
       })
 
-      const maria = await prisma.users.create({
-        data: {
-          name: "maria",
-          username: faker.internet.username(),
-          passwordHash: await bcryptjs.hash("1234", 10),
-          securityQuestion: "abcde",
-          securityAnswer: await bcryptjs.hash("abcde", 10),
-          role: "user"
-        }
-      })
-
-      const adanAccount = await prisma.accounts.create({
-        data: {
-          accountPasswordHash: await bcryptjs.hash("1234", 10),
-          idUser: adan.id
-        }
-      })
-
-      const mariaAccount = await prisma.accounts.create({
-        data: {
-          accountPasswordHash: await bcryptjs.hash("1234", 10),
-          idUser: maria.id
-        }
+      const { user: maria, account: mariaAccount } = await createUserWithAccount(prisma, {
+        user: { name: "maria" },
+        account: {}
       })
 
       // transaction from adan to maria
-
       await prisma.transfers.create({
         data: {
           value: 100,
@@ -89,7 +52,6 @@ describe("GET /statement", () => {
       })
 
       // transaction from maria to adan
-
       await prisma.transfers.create({
         data: {
           value: 50,
