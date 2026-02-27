@@ -4,7 +4,7 @@ import bcryptjs from "bcryptjs"
 export async function createUser(prisma, overrides = {}) {
   const defaultData = {
     name: faker.person.fullName(),
-    username: `${faker.internet.username()}_${crypto.randomUUID()}`.slice(0, 20),
+    username: `${faker.internet.username()}_${crypto.randomUUID()}`.slice(0, 15),
     passwordHash: await bcryptjs.hash("1234", 10),
     securityQuestion: "abcde",
     securityAnswer: await bcryptjs.hash("abcde", 10),
