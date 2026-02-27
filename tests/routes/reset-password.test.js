@@ -30,9 +30,7 @@ describe("PATCH /reset-password", () => {
 
   describe("when a user try to reset password", () => {
     describe("with invalid data", () => {
-      it("should return 201", async () => {
-        const { user } = await createUserWithAccount(prisma)
-
+      it("should return 400", async () => {
         const app = express()
         routes(app)
 
