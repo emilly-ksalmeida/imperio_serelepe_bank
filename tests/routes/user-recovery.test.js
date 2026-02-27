@@ -4,7 +4,7 @@ import routes from "../../src/routes/index.js"
 import { prisma } from "../setup/prisma-cleaner.js"
 import { createUserWithAccount } from "../factories/user.factory.js"
 
-describe("POST /validate-secret-answer", () => {
+describe("GET /user-recovery", () => {
   describe("when a user try to validate secret answer", () => {
     describe("with valid data", () => {
       it("should return 201", async () => {
