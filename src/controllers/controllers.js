@@ -18,6 +18,7 @@ import login from "../model/login.js";
 import { getAllProducts, newProduct } from "../model/products.js";
 import PurchaseService from "../model/purchase.js";
 
+// users.controller.ts [POST] /
 export async function createUser(req, res) {
   try {
     const newData = req.body;
@@ -43,6 +44,7 @@ export async function createUser(req, res) {
   }
 }
 
+// sessions.controller.ts [POST] /login
 export async function loginUser(req, res) {
   try {
     const data = req.body;
@@ -59,6 +61,21 @@ export async function loginUser(req, res) {
   }
 }
 
+
+// account-balance.controller.ts [GET] /user/balance
+export async function getBalance(req, res) {
+  try {
+    const accountId = req.dataCurrentUser.userAccountId.id;
+    const result = await getBalanceById(accountId);
+    res.status(200).json(result);
+  } catch (erro) {
+    console.error(erro.message);
+    res.status(500).json({ Erro: erro.message });
+  }
+}
+
+
+// transactions.controller.ts [POST] /transactions (CREATE)
 export async function makeTransfer(req, res) {
   try {
     const data = req.body;
@@ -79,16 +96,8 @@ export async function makeTransfer(req, res) {
     res.status(422).json({ Erro: erro.message });
   }
 }
-export async function getBalance(req, res) {
-  try {
-    const accountId = req.dataCurrentUser.userAccountId.id;
-    const result = await getBalanceById(accountId);
-    res.status(200).json(result);
-  } catch (erro) {
-    console.error(erro.message);
-    res.status(500).json({ Erro: erro.message });
-  }
-}
+
+// transactions.controller.ts [GET] /transactions (LIST)
 export async function getStatement(req, res) {
   try {
     const accountId = req.dataCurrentUser.userAccountId.id;
@@ -100,6 +109,7 @@ export async function getStatement(req, res) {
   }
 }
 
+// security-question.controller.ts [GET] /recovery
 export async function getUserSecurityQuestion(req, res) {
   try {
     const currentUsername = req.params.currentUsername;
@@ -111,6 +121,7 @@ export async function getUserSecurityQuestion(req, res) {
   }
 }
 
+// security-question.controller.ts [GET]
 export async function validateSecretAnswer(req, res) {
   try{
     const {currentUsername, answer} = req.body;
@@ -126,6 +137,7 @@ export async function validateSecretAnswer(req, res) {
   }
 }
 
+// password-reset.controller.ts
 export async function userResetPassword(req, res) {
   try {
     const dataRecovery = req.body;
@@ -141,6 +153,7 @@ export async function userResetPassword(req, res) {
     res.status(400).json({ Erro: erro.message });
   }
 }
+
 //Serelepe Market
 export async function getProducts(req, res) {
   try {
