@@ -1,11 +1,11 @@
 import { z } from 'zod';
-import { prismaImport } from "../model/db.js";
+import { prismaImport } from "../../model/db.js";
 
 import {
   createUserSchema,
-} from "../model/validateSchema.js";
+} from "../../model/validateSchema.js";
 
-import newUser from "../model/newUser.js";
+import newUser from "../../model/newUser.js";
 
 class UsersController {
   async createUser(req, res) {

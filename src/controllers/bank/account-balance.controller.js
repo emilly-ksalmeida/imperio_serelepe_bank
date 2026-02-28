@@ -1,6 +1,6 @@
 import {
   getBalanceById,
-} from "../model/listUsers.js";
+} from "../../model/listUsers.js";
 
 class AccountBalanceController {
   async getBalance(req, res) {

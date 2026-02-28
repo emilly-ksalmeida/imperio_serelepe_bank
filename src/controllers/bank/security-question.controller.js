@@ -1,4 +1,4 @@
-import { getSecurityQuestion, validateAnswer } from "../model/userRecovery.js";
+import { getSecurityQuestion, validateAnswer } from "../../model/userRecovery.js";
 
 class SecurityQuestionController {
   async getUserSecurityQuestion(req, res) {

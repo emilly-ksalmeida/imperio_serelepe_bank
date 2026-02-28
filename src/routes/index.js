@@ -2,11 +2,11 @@ import express from "express";
 import verifyToken from "../middleware/verifyToken.js";
 import { userResetPassword, getProducts, createProduct, createPurchase } from "../controllers/controllers.js";
 
-import SessionsController from "../controllers/sessions.controller.js";
-import UsersController from "../controllers/users.controller.js";
-import TransactionsController from "../controllers/transactions.controller.js";
-import AccountBalanceController from "../controllers/account-balance.controller.js";
-import SecurityQuestionController from "../controllers/security-question.controller.js";
+import SessionsController from "../controllers/auth/sessions.controller.js";
+import UsersController from "../controllers/users/users.controller.js";
+import TransactionsController from "../controllers/bank/transactions.controller.js";
+import AccountBalanceController from "../controllers/bank/account-balance.controller.js";
+import SecurityQuestionController from "../controllers/bank/security-question.controller.js";
 
 const routes = (app) => {
     app.use(express.urlencoded({ extended: true }));

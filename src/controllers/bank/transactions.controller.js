@@ -1,13 +1,13 @@
 import { z } from "zod";
 import {
   transferSchema,
-} from "../model/validateSchema.js";
+} from "../../model/validateSchema.js";
 
 import {
   generateAccountStatement,
-} from "../model/listUsers.js";
+} from "../../model/listUsers.js";
 
-import transfer from "../model/transfers.js";
+import transfer from "../../model/transfers.js";
 
 class TransactionsController {
   async makeTransfer(req, res) {

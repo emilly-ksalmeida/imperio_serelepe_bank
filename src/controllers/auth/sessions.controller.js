@@ -2,9 +2,9 @@ import { z } from "zod";
 
 import {
   loginSchema,
-} from "../model/validateSchema.js";
+} from "../../model/validateSchema.js";
 
-import login  from "../model/login.js";
+import login  from "../../model/login.js";
 
 class SessionsController {
   async loginUser(req, res) {
