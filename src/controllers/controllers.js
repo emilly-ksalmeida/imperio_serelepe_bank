@@ -3,38 +3,10 @@ import {
   resetUserSchema,
   productSchema,
 } from "../model/validateSchema.js";
-import { getSecurityQuestion, validateAnswer,resetPassword } from "../model/userRecovery.js";
+import { resetPassword } from "../model/userRecovery.js";
 import { getAllProducts, newProduct } from "../model/products.js";
 import PurchaseService from "../model/purchase.js";
 
-
-// security-question.controller.ts [GET] /recovery
-export async function getUserSecurityQuestion(req, res) {
-  try {
-    const currentUsername = req.params.currentUsername;
-    const question = await getSecurityQuestion(currentUsername);
-    res.status(200).json(question);
-  } catch (erro) {
-    console.error(erro.message);
-    res.status(404).json({ Erro: erro.message });
-  }
-}
-
-// security-question.controller.ts [GET]
-export async function validateSecretAnswer(req, res) {
-  try{
-    const {currentUsername, answer} = req.body;
-    const result = await validateAnswer(currentUsername, answer);
-    if(!result){
-      throw new Error("Resposta inválida.");
-    }
-    res.status(200).json(result);
-
-  }catch (erro) {
-    console.error(erro.message);
-    res.status(401).json({ Erro: erro.message });
-  }
-}
 
 // password-reset.controller.ts
 export async function userResetPassword(req, res) {

@@ -1,11 +1,12 @@
 import express from "express";
 import verifyToken from "../middleware/verifyToken.js";
-import { getUserSecurityQuestion, userResetPassword, validateSecretAnswer, getProducts, createProduct, createPurchase } from "../controllers/controllers.js";
+import { userResetPassword, getProducts, createProduct, createPurchase } from "../controllers/controllers.js";
 
 import SessionsController from "../controllers/sessions.controller.js";
 import UsersController from "../controllers/users.controller.js";
 import TransactionsController from "../controllers/transactions.controller.js";
 import AccountBalanceController from "../controllers/account-balance.controller.js";
+import SecurityQuestionController from "../controllers/security-question.controller.js";
 
 const routes = (app) => {
     app.use(express.urlencoded({ extended: true }));
@@ -15,13 +16,14 @@ const routes = (app) => {
     const usersController = new UsersController();
     const transactionsController = new TransactionsController();
     const accountBalanceController = new AccountBalanceController();
+    const securityQuestionController = new SecurityQuestionController();
 
     //Serelepepay
     app.get("/balance", verifyToken, accountBalanceController.getBalance);
 
     app.get("/statement", verifyToken, transactionsController.getStatement);
 
-    app.get("/user-recovery/:currentUsername", getUserSecurityQuestion);
+    app.get("/user-recovery/:currentUsername", securityQuestionController.getUserSecurityQuestion);
 
     app.post("/login", sessionsController.loginUser);
 
@@ -29,7 +31,7 @@ const routes = (app) => {
 
     app.post("/make-transfer", verifyToken, transactionsController.makeTransfer);
 
-    app.post("/validate-secret-answer", validateSecretAnswer);
+    app.post("/validate-secret-answer", securityQuestionController.validateSecretAnswer);
 
     app.patch("/reset-password", userResetPassword);
 
