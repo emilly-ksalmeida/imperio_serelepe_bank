@@ -5,7 +5,6 @@ import {
 
 import { resetPassword } from "../../model/userRecovery.js";
 
-
 class PasswordResetController {
   async userResetPassword(req, res) {
     try {
