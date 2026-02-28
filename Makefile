@@ -25,3 +25,7 @@ test:
 test-watch:
 	@echo "Running tests in watch mode..."
 	@npm run test:watch
+
+lint:
+	@echo "Running ESLint..."
+	@npm run lint

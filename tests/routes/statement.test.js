@@ -37,7 +37,7 @@ describe("GET /statement", () => {
         account: {}
       })
 
-      const { user: maria, account: mariaAccount } = await createUserWithAccount(prisma, {
+      const { account: mariaAccount } = await createUserWithAccount(prisma, {
         user: { name: "maria" },
         account: {}
       })

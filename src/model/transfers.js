@@ -26,7 +26,7 @@ export default function transfer(data) {
       );
     }
 
-    const fromUpdate = await tx.accounts.update({
+    const _fromUpdate = await tx.accounts.update({
       data: {
         balance: subtraction,
       },
@@ -38,7 +38,7 @@ export default function transfer(data) {
     });
 
     const addition = parseFloat(to.balance) + parseFloat(value);
-    const toUpdate = await tx.accounts.update({
+    const _toUpdate = await tx.accounts.update({
       data: {
         balance: addition,
       },

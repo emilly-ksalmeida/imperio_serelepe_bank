@@ -23,7 +23,7 @@ describe("POST /make-transfer", () => {
           account: { balance: 1000 }
         })
 
-        const { user: maria, account: mariaAccount } = await createUserWithAccount(prisma, {
+        const { account: mariaAccount } = await createUserWithAccount(prisma, {
           user: { name: "maria" },
           account: {}
         })

@@ -61,3 +61,8 @@ API bancária para gerenciamento de contas, transferências e operações financ
   ```bash
   make db-test-setup
   ```
+
+- **Verificar código com ESLint:**
+  ```bash
+  make lint
+  ```
