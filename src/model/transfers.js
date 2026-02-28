@@ -3,6 +3,7 @@ import {prisma} from "./db.js";
 
 export default function transfer(data) {
   const { userAccountId, toAccountId, value, accountPassword } = data;
+
   if (userAccountId === toAccountId) {
     throw new Error("Não é possível realizar esta transferência.");
   }

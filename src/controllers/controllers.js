@@ -14,7 +14,6 @@ import {
 import { getSecurityQuestion, validateAnswer,resetPassword } from "../model/userRecovery.js";
 import newUser from "../model/newUser.js";
 import transfer from "../model/transfers.js";
-import login from "../model/login.js";
 import { getAllProducts, newProduct } from "../model/products.js";
 import PurchaseService from "../model/purchase.js";
 
@@ -43,24 +42,6 @@ export async function createUser(req, res) {
     res.status(422).json({ Erro: erro.message });
   }
 }
-
-// sessions.controller.ts [POST] /login
-export async function loginUser(req, res) {
-  try {
-    const data = req.body;
-    const validatedData = loginSchema.safeParse(data);
-    if (!validatedData.success) {
-      const pretty = z.prettifyError(validatedData.error);
-      throw new Error(pretty);
-    }
-    const createToken = await login(data);
-    res.status(201).json(createToken);
-  } catch (erro) {
-    console.error(erro.message);
-    res.status(403).json({ Erro: erro.message });
-  }
-}
-
 
 // account-balance.controller.ts [GET] /user/balance
 export async function getBalance(req, res) {
