@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
-    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
-    "start": "nodemon server.js"
+    "db:test:push": "dotenv -e .env.test prisma db push",
+    "start": "nodemon server.js",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules dotenv -e .env.test -- jest --watch",
+    "test": "NODE_OPTIONS=--experimental-vm-modules dotenv -e .env.test -- jest"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
@@ -20,6 +21,7 @@
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
+    "dotenv-cli": "^11.0.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "zod": "^4.1.11"
