@@ -1,8 +1,5 @@
 import { z } from "zod";
-import { prismaImport } from "../model/db.js";
 import {
-  createUserSchema,
-  loginSchema,
   transferSchema,
   resetUserSchema,
   productSchema,
@@ -12,36 +9,10 @@ import {
   generateAccountStatement,
 } from "../model/listUsers.js";
 import { getSecurityQuestion, validateAnswer,resetPassword } from "../model/userRecovery.js";
-import newUser from "../model/newUser.js";
 import transfer from "../model/transfers.js";
 import { getAllProducts, newProduct } from "../model/products.js";
 import PurchaseService from "../model/purchase.js";
 
-// users.controller.ts [POST] /
-export async function createUser(req, res) {
-  try {
-    const newData = req.body;
-    const validatedNewData = createUserSchema.safeParse(newData);
-    if (!validatedNewData.success) {
-      const pretty = z.prettifyError(validatedNewData.error);
-      throw new Error(pretty);
-    }
-    const createdUser = await newUser(newData);
-    res.status(201).json(createdUser);
-  } catch (erro) {
-    if (erro instanceof prismaImport.PrismaClientKnownRequestError) {
-      if (erro.code === "P2002") {
-        return res
-          .status(422)
-          .json({ Erro: "Você não pode usar esse username, escolha outro." });
-      }
-      return res
-        .status(422)
-        .json({ Erro: "Falha ao cadastrar, tente novamente." });
-    }
-    res.status(422).json({ Erro: erro.message });
-  }
-}
 
 // account-balance.controller.ts [GET] /user/balance
 export async function getBalance(req, res) {
