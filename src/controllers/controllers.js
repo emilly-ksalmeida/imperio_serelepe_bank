@@ -3,26 +3,9 @@ import {
   resetUserSchema,
   productSchema,
 } from "../model/validateSchema.js";
-import {
-  getBalanceById,
-} from "../model/listUsers.js";
 import { getSecurityQuestion, validateAnswer,resetPassword } from "../model/userRecovery.js";
 import { getAllProducts, newProduct } from "../model/products.js";
 import PurchaseService from "../model/purchase.js";
-
-
-// account-balance.controller.ts [GET] /user/balance
-export async function getBalance(req, res) {
-  try {
-    const accountId = req.dataCurrentUser.userAccountId.id;
-    const result = await getBalanceById(accountId);
-    res.status(200).json(result);
-  } catch (erro) {
-    console.error(erro.message);
-    res.status(500).json({ Erro: erro.message });
-  }
-}
-
 
 
 // security-question.controller.ts [GET] /recovery
