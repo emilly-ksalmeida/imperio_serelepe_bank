@@ -181,8 +181,8 @@ export async function createPurchase(req, res) {
     //verificar o estoque de cada produto de cada vendedor da lista de compras. Se todos os produtos tiverem estoque retornar true, se ao menos 1 produto não tiver estoque retornar false e informar quais produtos estão indisponíveis. (essa função pode ser feita no model, recebendo a purchaseList como parametro).
     const verificacao = new PurchaseService(atualizedData);
     await verificacao.validateItemsStock();
-    
-    
+
+
     if(verificacao.outOfStockItems.length > 0){
       return res.status(422).json({
         message: "Alguns produtos estão indisponíveis no momento.",
