@@ -1,15 +1,12 @@
 import { z } from "zod";
 import {
-  transferSchema,
   resetUserSchema,
   productSchema,
 } from "../model/validateSchema.js";
 import {
   getBalanceById,
-  generateAccountStatement,
 } from "../model/listUsers.js";
 import { getSecurityQuestion, validateAnswer,resetPassword } from "../model/userRecovery.js";
-import transfer from "../model/transfers.js";
 import { getAllProducts, newProduct } from "../model/products.js";
 import PurchaseService from "../model/purchase.js";
 
@@ -27,39 +24,6 @@ export async function getBalance(req, res) {
 }
 
 
-// transactions.controller.ts [POST] /transactions (CREATE)
-export async function makeTransfer(req, res) {
-  try {
-    const data = req.body;
-    const validatedData = transferSchema.safeParse(data);
-    if (!validatedData.success) {
-      const pretty = z.prettifyError(validatedData.error);
-      throw new Error(pretty);
-    }
-    const { userAccountId } = req.dataCurrentUser;
-    const atualizedData = {
-      userAccountId: userAccountId.id,
-      ...data,
-    };
-    const result = await transfer(atualizedData);
-    res.status(201).json(result);
-  } catch (erro) {
-    console.error(erro);
-    res.status(422).json({ Erro: erro.message });
-  }
-}
-
-// transactions.controller.ts [GET] /transactions (LIST)
-export async function getStatement(req, res) {
-  try {
-    const accountId = req.dataCurrentUser.userAccountId.id;
-    const result = await generateAccountStatement(accountId);
-    res.status(200).json(result);
-  } catch (erro) {
-    console.error(erro.message);
-    res.status(500).json({ Erro: erro.message });
-  }
-}
 
 // security-question.controller.ts [GET] /recovery
 export async function getUserSecurityQuestion(req, res) {
