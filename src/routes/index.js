@@ -24,23 +24,23 @@ const routes = (app) => {
     const purchaseController = new PurchaseController();
 
     // Auth routes
-    app.post("/login", sessionsController.loginUser);
-    app.get("/user-recovery/:currentUsername", securityQuestionController.getUserSecurityQuestion);
-    app.post("/validate-secret-answer", securityQuestionController.validateSecretAnswer);
-    app.patch("/reset-password", passwordResetController.userResetPassword);
+    app.post("/login", (req, res) => sessionsController.loginUser(req, res));
+    app.get("/user-recovery/:currentUsername", (req, res) => securityQuestionController.getUserSecurityQuestion(req, res));
+    app.post("/validate-secret-answer", (req, res) => securityQuestionController.validateSecretAnswer(req, res));
+    app.patch("/reset-password", (req, res) => passwordResetController.userResetPassword(req, res));
 
     // User routes
-    app.post("/create-user", usersController.createUser)
+    app.post("/create-user", (req, res) => usersController.createUser(req, res))
 
     // Bank routes
-    app.get("/balance", verifyToken, accountBalanceController.getBalance);
-    app.get("/statement", verifyToken, transactionsController.getStatement);
-    app.post("/make-transfer", verifyToken, transactionsController.makeTransfer);
+    app.get("/balance", verifyToken, (req, res) => accountBalanceController.getBalance(req, res));
+    app.get("/statement", verifyToken, (req, res) => transactionsController.getStatement(req, res));
+    app.post("/make-transfer", verifyToken, (req, res) => transactionsController.makeTransfer(req, res));
 
     // Market routes
-    app.get("/products", productsController.getProducts);
-    app.post("/products", productsController.createProduct);
-    app.post("/purchase", verifyToken, purchaseController.createPurchase);
+    app.get("/products", (req, res) => productsController.getProducts(req, res));
+    app.post("/products", (req, res) => productsController.createProduct(req, res));
+    app.post("/purchase", verifyToken, (req, res) => purchaseController.createPurchase(req, res));
 }
 
 export default routes;
