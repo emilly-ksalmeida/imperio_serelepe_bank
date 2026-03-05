@@ -6,12 +6,12 @@ export default class Balance {
   }
 
   async getBalanceById() {
-    const from = await prisma.accounts.findUnique({
+    const userBalance = await prisma.accounts.findUnique({
       where: { id: this.userAccountId.id },
       select: { balance: true },
     });
 
-    return from.balance;
+    return userBalance;
   }
 
   async verifyBalanceForDebit(valueForDebit) {
