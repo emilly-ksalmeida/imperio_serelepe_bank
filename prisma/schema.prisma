@@ -17,7 +17,10 @@ model Users {
   updatedAt        DateTime  @updatedAt
   securityAnswer   String
   securityQuestion String    @db.VarChar(100)
+  role             String    @default("user") @db.VarChar(10)
   account          Accounts?
+  product          Products[]
+  orders           Orders[]
 }
 
 model Accounts {
@@ -27,6 +30,7 @@ model Accounts {
   idUser              String      @unique(map: "Account_idUser_key")
   createdAt           DateTime    @default(now())
   updatedAt           DateTime    @updatedAt
+
   owner               Users       @relation(fields: [idUser], references: [id], map: "Account_idUser_fkey")
 
   sentTransfers Transfers[] @relation("FromAccount")
@@ -45,4 +49,47 @@ model Transfers {
 
   @@index([fromId])
   @@index([toId])
+}
+
+model Products {
+  id Int    @id @default(autoincrement())
+  name String @db.VarChar(100)
+  description String @db.VarChar(255)
+  unitPrice Decimal @db.Decimal(20, 2)
+  stockQuantity Int @default(0)
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  sellerId String
+
+  seller Users @relation(fields: [sellerId], references: [id])
+  orderItems OrderItems[]
+}
+
+model Orders {
+  id String @id @default(uuid())
+  buyerId String
+  status String @default("paid") @db.VarChar(20)
+  totalAmount Decimal @db.Decimal(20, 2)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  buyer Users @relation(fields: [buyerId], references: [id])
+
+  orderItems OrderItems[]
+}
+
+model OrderItems {
+  id String @id @default(uuid())
+  orderId String
+  productId Int
+  quantity Int 
+  unitPriceOrdered Decimal @db.Decimal(20, 2)
+  productNameOrdered String @db.VarChar(100)
+
+  order Orders @relation(fields: [orderId], references: [id])
+  product Products @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@index([productId])
 }

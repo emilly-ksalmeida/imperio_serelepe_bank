@@ -3,6 +3,7 @@ import {prisma} from "./db.js";
 
 export default function transfer(data) {
   const { userAccountId, toAccountId, value, accountPassword } = data;
+
   if (userAccountId === toAccountId) {
     throw new Error("Não é possível realizar esta transferência.");
   }
@@ -26,7 +27,7 @@ export default function transfer(data) {
       );
     }
 
-    const fromUpdate = await tx.accounts.update({
+    const _fromUpdate = await tx.accounts.update({
       data: {
         balance: subtraction,
       },
@@ -38,7 +39,7 @@ export default function transfer(data) {
     });
 
     const addition = parseFloat(to.balance) + parseFloat(value);
-    const toUpdate = await tx.accounts.update({
+    const _toUpdate = await tx.accounts.update({
       data: {
         balance: addition,
       },

@@ -12,15 +12,6 @@ export async function getSecurityQuestion(currentUsername) {
   return userSecurityQuestion;
 }
 
-export async function validateAnswer(currentUsername, answer){
-  const dbUserSecurityAnswer = await prisma.users.findUnique({
-    where: { username: currentUsername },
-    select: { securityAnswer: true },
-  });
-  const checkAnswer = await bcryptjs.compare(answer, dbUserSecurityAnswer.securityAnswer);
-  return checkAnswer;
-}
-
 export async function resetPassword(data) {
   const { currentUsername, newPassword, newAccountPassword } = data;
   const newPasswordHash = await bcryptjs.hash(newPassword, 10);
