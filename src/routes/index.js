@@ -38,9 +38,9 @@ const routes = (app) => {
     app.post("/make-transfer", verifyToken, (req, res) => transactionsController.makeTransfer(req, res));
 
     // Market routes
-    app.get("/products", (req, res) => productsController.getProducts(req, res));
-    app.post("/products", (req, res) => productsController.createProduct(req, res));
-    app.post("/purchase", verifyToken, (req, res) => purchaseController.createPurchase(req, res));
+    // app.get("/products", (req, res) => productsController.getProducts(req, res));
+    // app.post("/products", (req, res) => productsController.createProduct(req, res));
+    // app.post("/purchase", verifyToken, (req, res) => purchaseController.createPurchase(req, res));
 }
 
 export default routes;
