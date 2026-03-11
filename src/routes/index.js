@@ -8,7 +8,7 @@ import AccountBalanceController from "../controllers/bank/account-balance.contro
 import SecurityQuestionController from "../controllers/auth/security-question.controller.js";
 import PasswordResetController from "../controllers/auth/password-reset.controller.js";
 import ProductsController from "../controllers/market/products.controller.js";
-import PurchaseController from "../controllers/market/purchase.controller.js";
+// import PurchaseController from "../controllers/market/purchase.controller.js";
 
 const routes = (app) => {
     app.use(express.urlencoded({ extended: true }));
@@ -21,7 +21,7 @@ const routes = (app) => {
     const securityQuestionController = new SecurityQuestionController();
     const passwordResetController = new PasswordResetController();
     const productsController = new ProductsController();
-    const purchaseController = new PurchaseController();
+    // const purchaseController = new PurchaseController();
 
     // Auth routes
     app.post("/login", (req, res) => sessionsController.loginUser(req, res));
@@ -38,8 +38,8 @@ const routes = (app) => {
     app.post("/make-transfer", verifyToken, (req, res) => transactionsController.makeTransfer(req, res));
 
     // Market routes
-    // app.get("/products", (req, res) => productsController.getProducts(req, res));
-    // app.post("/products", (req, res) => productsController.createProduct(req, res));
+    app.get("/products", (req, res) => productsController.getProducts(req, res));
+    app.post("/products", (req, res) => productsController.createProduct(req, res));
     // app.post("/purchase", verifyToken, (req, res) => purchaseController.createPurchase(req, res));
 }
 
