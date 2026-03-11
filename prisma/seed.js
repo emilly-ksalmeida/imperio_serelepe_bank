@@ -66,8 +66,7 @@ async function main() {
   ];
 
   USERS.forEach(async (user) => {
-
-    const newUser = await prisma.users.upsert({
+    await prisma.users.upsert({
       where: { username: user.username },
       update: {},
       create: {
@@ -92,7 +91,7 @@ async function main() {
                 stockQuantity: product.stockQuantity
               }))
             }
-          } : undefined 
+          } : undefined
         }
     })
   })

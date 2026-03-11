@@ -11,11 +11,17 @@ import {
   getBalanceById,
   generateAccountStatement,
 } from "../model/listUsers.js";
-import { getSecurityQuestion, validateAnswer,resetPassword } from "../model/userRecovery.js";
+import {
+  getSecurityQuestion,
+  validateAnswer,
+  resetPassword,
+} from "../model/userRecovery.js";
 import newUser from "../model/newUser.js";
-import transfer from "../model/transfers.js";
+import Transfer from "../model/transfers.js";
 import login from "../model/login.js";
 import { getAllProducts, newProduct } from "../model/products.js";
+import PasswordCheck from "../model/checkPassword.js";
+import Balance from "../model/balance.js";
 
 export async function createUser(req, res) {
   try {
@@ -58,7 +64,9 @@ export async function loginUser(req, res) {
   }
 }
 
+//REFACTOR function makeTransfer 
 export async function makeTransfer(req, res) {
+  //makeTransfer passou por refatoração para aplicar a estrutura de classe, e também para retirar as validações do método executeTransfer, para que elas possam ser testadas individualmente. O método executeTransfer agora é responsável apenas por executar a transferência, e as validações são feitas antes de chamar esse método.
   try {
     const data = req.body;
     const validatedData = transferSchema.safeParse(data);
@@ -67,21 +75,31 @@ export async function makeTransfer(req, res) {
       throw new Error(pretty);
     }
     const { userAccountId } = req.dataCurrentUser;
+
     const atualizedData = {
       userAccountId: userAccountId.id,
       ...data,
     };
-    const result = await transfer(atualizedData);
+
+    const transferProcess = new Transfer(atualizedData);
+    const passwordProcess = new PasswordCheck(atualizedData);
+
+    transferProcess.preventSelfTransfer();
+    await passwordProcess.verify();
+    const result = await transferProcess.executeTransfer();
+    
     res.status(201).json(result);
   } catch (erro) {
     console.error(erro);
     res.status(422).json({ Erro: erro.message });
   }
 }
+
 export async function getBalance(req, res) {
   try {
-    const accountId = req.dataCurrentUser.userAccountId.id;
-    const result = await getBalanceById(accountId);
+    const dataUser = req.dataCurrentUser;
+    const balance = new Balance(dataUser);
+    const result = await balance.getBalanceById();
     res.status(200).json(result);
   } catch (erro) {
     console.error(erro.message);
@@ -111,15 +129,14 @@ export async function getUserSecurityQuestion(req, res) {
 }
 
 export async function validateSecretAnswer(req, res) {
-  try{
-    const {currentUsername, answer} = req.body;
+  try {
+    const { currentUsername, answer } = req.body;
     const result = await validateAnswer(currentUsername, answer);
-    if(!result){
+    if (!result) {
       throw new Error("Resposta inválida.");
     }
     res.status(200).json(result);
-
-  }catch (erro) {
+  } catch (erro) {
     console.error(erro.message);
     res.status(401).json({ Erro: erro.message });
   }

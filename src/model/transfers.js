@@ -1,57 +1,53 @@
-import bcryptjs from "bcryptjs";
-import {prisma} from "./db.js";
+import Balance from "./balance.js";
+import { prisma } from "./db.js";
 
 export default function transfer(data) {
   const { userAccountId, toAccountId, value, accountPassword } = data;
+
   if (userAccountId === toAccountId) {
     throw new Error("Não é possível realizar esta transferência.");
   }
-  return prisma.$transaction(async (tx) => {
-    const from = await tx.accounts.findUnique({
-      where: { id: userAccountId },
-    });
 
-    const checkPassword = await bcryptjs.compare(
-      accountPassword,
-      from.accountPasswordHash
-    );
-    if (!checkPassword) {
-      throw new Error("Senha da conta incorreta!!");
-    }
+  // preventSelfTransfer() {
+  //   if (this.userAccountId === this.toAccountId) {
+  //     throw new Error("Não é possível realizar esta transferência.");
+  //   } else {
+  //     return true;
+  //   }
+  // }
 
-    const subtraction = parseFloat(from.balance) - parseFloat(value);
-    if (subtraction < 0) {
-      throw new Error(
-        `Não existe saldo suficiente para mandar o valor $${value}`
-      );
-    }
+//   async executeTransfer() {
+//     const remainingBalance = await this.verifyBalance.verifyBalanceForDebit(this.value);
+   
+//     return prisma.$transaction(async (tx) => {
 
-    const fromUpdate = await tx.accounts.update({
-      data: {
-        balance: subtraction,
-      },
-      where: { id: userAccountId },
-    });
+//     const _fromUpdate = await tx.accounts.update({
+//       data: {
+//         balance: subtraction,
+//       },
+//       where: { id: userAccountId },
+//     });
 
-    const to = await tx.accounts.findUnique({
-      where: { id: toAccountId },
-    });
+//     const to = await tx.accounts.findUnique({
+//       where: { id: toAccountId },
+//     });
 
-    const addition = parseFloat(to.balance) + parseFloat(value);
-    const toUpdate = await tx.accounts.update({
-      data: {
-        balance: addition,
-      },
-      where: { id: toAccountId },
-    });
-    const registerTransfer = await tx.transfers.create({
-      data: {
-        value: value,
-        fromId: userAccountId,
-        toId: toAccountId,
-      },
-    });
+//     const addition = parseFloat(to.balance) + parseFloat(value);
+//     const _toUpdate = await tx.accounts.update({
+//       data: {
+//         balance: addition,
+//       },
+//       where: { id: toAccountId },
+//     });
+//     const registerTransfer = await tx.transfers.create({
+//       data: {
+//         value: value,
+//         fromId: userAccountId,
+//         toId: toAccountId,
+//       },
+//     });
 
-    return registerTransfer;
-  });
+//     return registerTransfer;
+//   });
+// }
 }

@@ -85,6 +85,7 @@ model OrderItems {
   productId Int
   quantity Int 
   unitPriceOrdered Decimal @db.Decimal(20, 2)
+  productNameOrdered String @db.VarChar(100)
 
   order Orders @relation(fields: [orderId], references: [id])
   product Products @relation(fields: [productId], references: [id])
