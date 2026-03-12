@@ -138,4 +138,5 @@ export const productSchema = z.object({
   .refine((val) => val >= 0, {
     error: "A quantidade em estoque não pode ser negativa.",
   }),
+  imgUrl: z.string().max(200).optional(),
 });

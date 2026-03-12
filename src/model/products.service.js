@@ -10,7 +10,7 @@ export class ProductsService {
   }
   
   async newProduct(productData) {
-    const { sellerId, name, description, unitPrice, stockQuantity } = productData;
+    const { sellerId, name, description, unitPrice, stockQuantity, imgUrl } = productData;
     const parsedUnitPrice = parseFloat(unitPrice);
     const parsedStockQuantity = parseInt(stockQuantity, 10);
 
@@ -21,6 +21,7 @@ export class ProductsService {
         description,
         unitPrice: parsedUnitPrice,
         stockQuantity: parsedStockQuantity,
+        imgUrl,
       },
     });
   }
