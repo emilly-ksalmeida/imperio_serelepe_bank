@@ -22,6 +22,7 @@ describe("POST /login", () => {
 
       expect(res.body).toEqual({
         username: user.username,
+        role: user.role,
         token: expect.any(String),
         accountId: account.id
       })
