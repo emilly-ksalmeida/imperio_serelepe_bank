@@ -106,37 +106,24 @@ export const resetUserSchema = z.object({
 
 export const productSchema = z.object({
   sellerId: z.string().nonempty("ID do vendedor é obrigatório."),
-  name: z.string().nonempty("Nome do produto é obrigatório."),
+  name: z.string().refine(
+      (name) => name.trim().length > 0,
+      "Nome não pode conter apenas espaços.",
+    ).nonempty("Nome do produto é obrigatório."),
   description: z
     .string()
     .min(10, "A descrição do produto deve ter no mínimo 10 caracteres.")
     .max(200, "A descrição do produto deve ter no máximo 200 caracteres.")
     .nonempty("Descrição do produto é obrigatória."),
   unitPrice: z
-    .string()
-    .nonempty("O valor é obrigatório")
-    .refine((val) => !val.includes(" "), {
-      error: "O valor não pode conter espaços.",
-    })
-    .refine((val) => /^\d+(\.00|\.0|\.\d{2})?$/.test(val), {
-      error: "O valor precisa ser numérico com duas casas decimais.",
-    })
-    .transform((val) => Number.parseFloat(val))
-    .refine((val) => val >= 1, {
-      error: "O valor mínimo para produtos é 1.00",
-    }),
+  .number().gt(1, "O valor mínimo para produtos é 1.00")
+  .refine(
+    (value) => /^\d+(\.00|\.0|\.\d{2})?$/.test(value.toString()),
+    "O valor precisa ser numérico com duas casas decimais."
+  ),
   stockQuantity: z
-  .string()
-  .nonempty("A quantidade em estoque é obrigatória.")
-  .refine((val) => !val.includes(" "), {
-    error: "A quantidade em estoque não pode conter espaços.",
-  })
-  .refine((val) => /^\d+$/.test(val), {
-    error: "A quantidade em estoque deve ser um número inteiro.",
-  })
-  .transform((val) => parseInt(val, 10))
-  .refine((val) => val >= 0, {
-    error: "A quantidade em estoque não pode ser negativa.",
-  }),
+  .number().gt(0, "O valor mínimo é zero")
+  .int()
+  .nonnegative(),
   imgUrl: z.string().max(200).optional(),
 });
