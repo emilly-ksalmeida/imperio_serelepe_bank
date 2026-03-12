@@ -1,5 +1,6 @@
 import express from "express";
 import verifyToken from "../middleware/verifyToken.js";
+import verifyRole from "../middleware/verifyRole.js";
 
 import SessionsController from "../controllers/auth/sessions.controller.js";
 import UsersController from "../controllers/users/users.controller.js";
@@ -38,8 +39,8 @@ const routes = (app) => {
     app.post("/make-transfer", verifyToken, (req, res) => transactionsController.makeTransfer(req, res));
 
     // Market routes
-    app.get("/products", (req, res) => productsController.getProducts(req, res));
-    app.post("/products", (req, res) => productsController.createProduct(req, res));
+    app.get("/products", verifyToken, (req, res) => productsController.getProducts(req, res));
+    app.post("/products", verifyToken, verifyRole, (req, res) => productsController.createProduct(req, res));
     // app.post("/purchase", verifyToken, (req, res) => purchaseController.createPurchase(req, res));
 }
 
