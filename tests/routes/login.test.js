@@ -21,7 +21,9 @@ describe("POST /login", () => {
       expect(res.statusCode).toBe(201)
 
       expect(res.body).toEqual({
+        userId: user.id,
         username: user.username,
+        role: user.role,
         token: expect.any(String),
         accountId: account.id
       })

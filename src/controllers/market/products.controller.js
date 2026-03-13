@@ -4,12 +4,18 @@ import {
   productSchema,
 } from "../../model/validateSchema.js";
 
-import { getAllProducts, newProduct } from "../../model/products.js";
+import ProductsService from "../../model/products.service.js";
 
 class ProductsController {
+constructor(
+  productsService = new ProductsService()
+) {
+  this.productsService = productsService;
+}
+
   async  getProducts(req, res) {
     try {
-      const allProducts = await getAllProducts();
+      const allProducts = await this.productsService.getAllProducts();
       res.status(200).json(allProducts);
     } catch (erro) {
       console.error(erro.message);
@@ -25,7 +31,7 @@ class ProductsController {
         const pretty = z.prettifyError(validatedProductData.error);
         throw new Error(pretty);
       }
-      const product = await newProduct(productData);
+      const product = await this.productsService.newProduct(productData);
       res.status(201).json(product);
     } catch (erro) {
       console.error(erro.message);

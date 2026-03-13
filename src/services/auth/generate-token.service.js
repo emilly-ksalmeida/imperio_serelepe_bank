@@ -32,9 +32,11 @@ class GenerateTokenService {
     const token = this.generateJWT(user, userAccountId.id);
 
     return {
+      userId: user.id,
       username: username,
+      role: user.role,
       token: token,
-      accountId: userAccountId.id
+      accountId: userAccountId.id,
     };
   }
 
@@ -44,6 +46,7 @@ class GenerateTokenService {
         id: user.id,
         username: user.username,
         name: user.name,
+        role: user.role,
         userAccountId: { id: userAccountId },
       },
       process.env.SECRET_KEY,
