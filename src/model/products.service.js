@@ -6,10 +6,18 @@ export class ProductsService {
   }
 
   async getAllProducts() {
-    return await this.repository.products.findMany();
+    return await this.repository.products.findMany({
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        unitPrice: true,
+      }
+    });
   }
 
   async getProductsBySeller(sellerId) {
+
     return await this.repository.products.findMany({
       where: { sellerId: sellerId },
       select: {
