@@ -43,6 +43,7 @@ const routes = (app) => {
     app.post("/products", verifyToken, verifyRole, (req, res) => productsController.createProduct(req, res));
     app.get("/products/seller", verifyToken, verifyRole, (req, res) => productsController.getSellerProducts(req, res));
     app.put("/products/seller/:productId", verifyToken, verifyRole, (req, res) => productsController.updateProduct(req, res));
+    app.delete("/products/seller/:productId", verifyToken, verifyRole, (req, res) => productsController.deleteProduct(req, res));
     // app.post("/purchase", verifyToken, (req, res) => purchaseController.createPurchase(req, res));
 }
 

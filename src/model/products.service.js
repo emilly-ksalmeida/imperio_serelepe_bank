@@ -60,6 +60,18 @@ export class ProductsService {
       },
     });
   }
+
+  async deleteProduct(productId, currentUserId) {
+    const productIdParsed = parseInt(productId);
+
+    return await this.repository.products.delete({
+      where: { id: productIdParsed, sellerId: currentUserId },
+      select: {
+        id: true,
+        name: true,
+      }
+    });
+  }
 }
 
 export default ProductsService;

@@ -79,6 +79,30 @@ class ProductsController {
       res.status(422).json({ Erro: erro.message });
     }
   }
+
+  async deleteProduct(req, res){
+    try {
+      const { productId } = req.params;
+      const currentUserId = req.dataCurrentUser.id;
+      const _deletedProduct = await this.productsService.deleteProduct(
+        productId,
+        currentUserId,
+      );
+      res.status(204).json("Produto deletado");
+    } catch (erro) {
+      if (erro instanceof prismaImport.PrismaClientKnownRequestError) {
+        if (erro.code === "P2025") {
+          return res
+            .status(403)
+            .json({ Erro: "Não é possível deletar este produto" });
+        }
+        return res
+          .status(404)
+          .json({ Erro: "Não é possível deletar este produto" });
+      }
+      res.status(422).json({ Erro: erro.message });
+    }
+  }
 }
 
 export default ProductsController;
