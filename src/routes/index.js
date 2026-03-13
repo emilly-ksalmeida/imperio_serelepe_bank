@@ -41,7 +41,8 @@ const routes = (app) => {
     // Market routes
     app.get("/products", verifyToken, (req, res) => productsController.getProducts(req, res));
     app.post("/products", verifyToken, verifyRole, (req, res) => productsController.createProduct(req, res));
-    app.get("/products/seller/:sellerId", verifyToken, verifyRole, (req, res) => productsController.getSellerProducts(req, res));
+    app.get("/products/seller", verifyToken, verifyRole, (req, res) => productsController.getSellerProducts(req, res));
+    app.put("/products/seller/:productId", verifyToken, verifyRole, (req, res) => productsController.updateProduct(req, res));
     // app.post("/purchase", verifyToken, (req, res) => purchaseController.createPurchase(req, res));
 }
 
