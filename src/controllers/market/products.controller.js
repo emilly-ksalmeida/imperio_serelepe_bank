@@ -26,11 +26,16 @@ constructor(
   async getSellerProducts(req, res) {
     try {
       const { sellerId } = req.params;
+      const currentUserId = req.dataCurrentUser.id;
+      if (sellerId !== currentUserId) {
+        throw new Error("Acesso negado: Você só pode acessar seus próprios produtos.");
+      }
+
       const sellerProducts = await this.productsService.getProductsBySeller(sellerId);
       res.status(200).json(sellerProducts);
     } catch (erro) {
       console.error(erro.message);
-      res.status(500).json({ Erro: erro.message });
+      res.status(403).json({ Erro: erro.message });
     }
   }
 
