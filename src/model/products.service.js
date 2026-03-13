@@ -8,6 +8,18 @@ export class ProductsService {
   async getAllProducts() {
     return await this.repository.products.findMany();
   }
+
+  async getProductsBySeller(sellerId) {
+    return await this.repository.products.findMany({
+      where: { sellerId: sellerId },
+      select: {
+        id: true,
+        name: true,
+        unitPrice: true,
+        stockQuantity: true,
+      },  
+    });
+  }
   
   async newProduct(productData) {
     const { sellerId, name, description, unitPrice, stockQuantity, imgUrl } = productData;

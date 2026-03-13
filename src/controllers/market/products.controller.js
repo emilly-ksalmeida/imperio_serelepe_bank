@@ -23,6 +23,17 @@ constructor(
     }
   }
 
+  async getSellerProducts(req, res) {
+    try {
+      const { sellerId } = req.params;
+      const sellerProducts = await this.productsService.getProductsBySeller(sellerId);
+      res.status(200).json(sellerProducts);
+    } catch (erro) {
+      console.error(erro.message);
+      res.status(500).json({ Erro: erro.message });
+    }
+  }
+
    async  createProduct(req, res) {
     try {
       const productData = req.body;
