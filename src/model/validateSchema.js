@@ -122,8 +122,9 @@ export const productSchema = z.object({
     "O valor precisa ser numérico com duas casas decimais."
   ),
   stockQuantity: z
-  .number().gt(0, "O valor mínimo é zero")
+  .number().gte(0, "O valor mínimo é zero")
   .int()
   .nonnegative(),
   imgUrl: z.string().max(200).optional(),
 });
+
