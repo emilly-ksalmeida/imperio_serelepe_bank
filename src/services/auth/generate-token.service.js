@@ -32,6 +32,7 @@ class GenerateTokenService {
     const token = this.generateJWT(user, userAccountId.id);
 
     return {
+      userId: user.id,
       username: username,
       role: user.role,
       token: token,
