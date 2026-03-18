@@ -12,6 +12,7 @@ export class ProductsService {
         name: true,
         description: true,
         unitPrice: true,
+        imgUrl: true,
       },
     });
   }
@@ -22,6 +23,7 @@ export class ProductsService {
       select: {
         id: true,
         name: true,
+        description: true,
         unitPrice: true,
         stockQuantity: true,
       },
