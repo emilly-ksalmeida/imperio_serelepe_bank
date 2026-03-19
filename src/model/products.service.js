@@ -7,12 +7,13 @@ export class ProductsService {
 
   async getAllProducts() {
     return await this.repository.products.findMany({
+      where: { stockQuantity: { gt: 0 } },
       select: {
         id: true,
         name: true,
         description: true,
         unitPrice: true,
-        imgUrl: true,
+        // imgUrl: true,
       },
     });
   }
@@ -43,6 +44,10 @@ export class ProductsService {
         stockQuantity,
         imgUrl,
       },
+      select: {
+        id: true,
+        name:true,
+      }
     });
   }
 
@@ -60,6 +65,9 @@ export class ProductsService {
         stockQuantity,
         isActive,
       },
+      select: {
+        id: true,
+      }
     });
   }
 
