@@ -6,23 +6,80 @@ export class ProductsService {
   }
 
   async getAllProducts() {
-    return await this.repository.products.findMany();
+    return await this.repository.products.findMany({
+      where: { stockQuantity: { gt: 0 } },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        unitPrice: true,
+        // imgUrl: true,
+      },
+    });
   }
-  
+
+  async getProductsBySeller(sellerId) {
+    return await this.repository.products.findMany({
+      where: { sellerId: sellerId },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        unitPrice: true,
+        stockQuantity: true,
+      },
+    });
+  }
+
   async newProduct(productData) {
-    const { sellerId, name, description, unitPrice, stockQuantity, imgUrl } = productData;
-    const parsedUnitPrice = parseFloat(unitPrice);
-    const parsedStockQuantity = parseInt(stockQuantity, 10);
+    const { sellerId, name, description, unitPrice, stockQuantity, imgUrl } =
+      productData;
 
     return await this.repository.products.create({
       data: {
         sellerId,
         name,
         description,
-        unitPrice: parsedUnitPrice,
-        stockQuantity: parsedStockQuantity,
+        unitPrice,
+        stockQuantity,
         imgUrl,
       },
+      select: {
+        id: true,
+        name:true,
+      }
+    });
+  }
+
+  async updateProduct(productId, currentUserId, updateData) {
+    const { name, description, unitPrice, stockQuantity } = updateData;
+    const isActive = stockQuantity > 0 ? true : false;
+    const productIdParsed = parseInt(productId);
+
+    return await this.repository.products.update({
+      where: { id: productIdParsed, sellerId: currentUserId },
+      data: {
+        name,
+        description,
+        unitPrice,
+        stockQuantity,
+        isActive,
+      },
+      select: {
+        id: true,
+      }
+    });
+  }
+
+  async deleteProduct(productId, currentUserId) {
+    const productIdParsed = parseInt(productId);
+
+    return await this.repository.products.delete({
+      where: { id: productIdParsed, sellerId: currentUserId },
+      select: {
+        id: true,
+        name: true,
+      }
     });
   }
 }
