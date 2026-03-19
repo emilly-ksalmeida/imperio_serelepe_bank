@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { productSchema } from "../../model/validateSchema.js";
+import { productSchema, updateProductSchema } from "../../model/validateSchema.js";
 
 import ProductsService from "../../model/products.service.js";
 import { prismaImport } from "../../model/db.js";
@@ -53,7 +53,7 @@ class ProductsController {
       const { productId } = req.params;
       const updateData = req.body;
       const currentUserId = req.dataCurrentUser.id;
-      const validatedNewData = productSchema.safeParse(updateData);
+      const validatedNewData = updateProductSchema.safeParse(updateData);
       if (!validatedNewData.success) {
         const pretty = z.prettifyError(validatedNewData.error);
         throw new Error(pretty);
