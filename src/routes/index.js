@@ -1,5 +1,6 @@
 import express from "express";
 import verifyToken from "../middleware/verifyToken.js";
+import verifyRole from "../middleware/verifyRole.js";
 
 import SessionsController from "../controllers/auth/sessions.controller.js";
 import UsersController from "../controllers/users/users.controller.js";
@@ -8,7 +9,7 @@ import AccountBalanceController from "../controllers/bank/account-balance.contro
 import SecurityQuestionController from "../controllers/auth/security-question.controller.js";
 import PasswordResetController from "../controllers/auth/password-reset.controller.js";
 import ProductsController from "../controllers/market/products.controller.js";
-import PurchaseController from "../controllers/market/purchase.controller.js";
+// import PurchaseController from "../controllers/market/purchase.controller.js";
 
 const routes = (app) => {
     app.use(express.urlencoded({ extended: true }));
@@ -21,7 +22,7 @@ const routes = (app) => {
     const securityQuestionController = new SecurityQuestionController();
     const passwordResetController = new PasswordResetController();
     const productsController = new ProductsController();
-    const purchaseController = new PurchaseController();
+    // const purchaseController = new PurchaseController();
 
     // Auth routes
     app.post("/login", (req, res) => sessionsController.loginUser(req, res));
@@ -38,9 +39,11 @@ const routes = (app) => {
     app.post("/make-transfer", verifyToken, (req, res) => transactionsController.makeTransfer(req, res));
 
     // Market routes
-    // app.get("/products", (req, res) => productsController.getProducts(req, res));
-    // app.post("/products", (req, res) => productsController.createProduct(req, res));
-    // app.post("/purchase", verifyToken, (req, res) => purchaseController.createPurchase(req, res));
+    app.get("/products", verifyToken, verifyRole, (req, res) => productsController.getProducts(req, res));
+    app.post("/products", verifyToken, verifyRole, (req, res) => productsController.createProduct(req, res));
+    app.get("/products/seller", verifyToken, verifyRole, (req, res) => productsController.getSellerProducts(req, res));
+    app.put("/products/seller/:productId", verifyToken, verifyRole, (req, res) => productsController.updateProduct(req, res));
+  
 }
 
 export default routes;

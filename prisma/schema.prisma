@@ -61,6 +61,7 @@ model Products {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   sellerId String
+  imgUrl String @db.VarChar(255) @default("link/exemplo.png")
 
   seller Users @relation(fields: [sellerId], references: [id])
   orderItems OrderItems[]
