@@ -67,10 +67,16 @@ model Products {
   orderItems OrderItems[]
 }
 
+enum Status {
+  paid
+  delivered
+  cancelled
+}
+
 model Orders {
   id String @id @default(uuid())
   buyerId String
-  status String @default("paid") @db.VarChar(20)
+  status Status @default(paid)
   totalAmount Decimal @db.Decimal(20, 2)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
