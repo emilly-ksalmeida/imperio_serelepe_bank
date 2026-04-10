@@ -9,7 +9,7 @@ import AccountBalanceController from "../controllers/bank/account-balance.contro
 import SecurityQuestionController from "../controllers/auth/security-question.controller.js";
 import PasswordResetController from "../controllers/auth/password-reset.controller.js";
 import ProductsController from "../controllers/market/products.controller.js";
-// import PurchaseController from "../controllers/market/purchase.controller.js";
+import OrdersController from "../controllers/market/orders.controller.js";
 
 const routes = (app) => {
     app.use(express.urlencoded({ extended: true }));
@@ -22,7 +22,7 @@ const routes = (app) => {
     const securityQuestionController = new SecurityQuestionController();
     const passwordResetController = new PasswordResetController();
     const productsController = new ProductsController();
-    // const purchaseController = new PurchaseController();
+    const ordersController = new OrdersController();
 
     // Auth routes
     app.post("/login", (req, res) => sessionsController.loginUser(req, res));
@@ -38,12 +38,14 @@ const routes = (app) => {
     app.get("/statement", verifyToken, (req, res) => transactionsController.getStatement(req, res));
     app.post("/make-transfer", verifyToken, (req, res) => transactionsController.makeTransfer(req, res));
 
-    // Market routes
-    app.get("/products", verifyToken, verifyRole, (req, res) => productsController.getProducts(req, res));
+    // Market routes - products management
+    app.get("/products", verifyToken, (req, res) => productsController.getProducts(req, res));
     app.post("/products", verifyToken, verifyRole, (req, res) => productsController.createProduct(req, res));
     app.get("/products/seller", verifyToken, verifyRole, (req, res) => productsController.getSellerProducts(req, res));
     app.put("/products/seller/:productId", verifyToken, verifyRole, (req, res) => productsController.updateProduct(req, res));
-  
+    //  Market routes - orders
+    app.post("/orders/finalize", verifyToken, (req, res) => ordersController.finalizeOrder(req, res));
+    
 }
 
 export default routes;
