@@ -1,5 +1,5 @@
-import bcryptjs from "bcryptjs";
 import {prisma} from "./db.js";
+import checkPassword  from "./../services/accounts/check-password.service.js";
 
 export default function transfer(data) {
   const { userAccountId, toAccountId, value, accountPassword } = data;
@@ -12,11 +12,12 @@ export default function transfer(data) {
       where: { id: userAccountId },
     });
 
-    const checkPassword = await bcryptjs.compare(
+    const validatePassword = await checkPassword(
       accountPassword,
       from.accountPasswordHash
     );
-    if (!checkPassword) {
+
+    if (!validatePassword) {
       throw new Error("Senha da conta incorreta!!");
     }
 
