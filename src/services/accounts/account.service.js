@@ -1,4 +1,4 @@
-import AccountRepository from "../../repositories/account.repository";
+import AccountRepository from "../../repositories/account.repository.js";
 
 class AccountService {
   constructor(accountRepository = new AccountRepository()) {
@@ -6,24 +6,34 @@ class AccountService {
   }
 
   async getBalanceById(accountId) {
-    const userBalance = await this.accountRepository.balanceById(accountId);
-    return userBalance;
+    try {
+      const userBalance = await this.accountRepository.balanceById(accountId);
+      return userBalance;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 
   async generateAccountStatement(userId) {
-    const statements = await this.accountRepository.accountStatement(userId);
+    try {
+      const statements = await this.accountRepository.accountStatement(userId);
 
-    return statements.map((statement) => {
-      return {
-        value: statement.value,
-        createdAt: statement.createdAt,
-        fromAccountName: statement.fromAccount.owner.name,
-        toAccountName: statement.toAccount.owner.name,
-        fromAccountId: statement.fromAccount.id,
-        toAccountId: statement.toAccount.id,
-        received: statement.toAccount.id === userId,
-      };
-    });
+      return statements.map((statement) => {
+        return {
+          value: statement.value,
+          createdAt: statement.createdAt,
+          fromAccountName: statement.fromAccount.owner.name,
+          toAccountName: statement.toAccount.owner.name,
+          fromAccountId: statement.fromAccount.id,
+          toAccountId: statement.toAccount.id,
+          received: statement.toAccount.id === userId,
+        };
+      });
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 }
 
