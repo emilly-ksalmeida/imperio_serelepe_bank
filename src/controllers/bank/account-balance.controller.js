@@ -1,12 +1,13 @@
-import {
-  getBalanceById,
-} from "../../model/listUsers.js";
+import AccountService from "../../services/accounts/account.service";
 
 class AccountBalanceController {
+   constructor(accountService = new AccountService()) {
+    this.accountService = accountService;
+  }
   async getBalance(req, res) {
     try {
       const accountId = req.dataCurrentUser.userAccountId.id;
-      const result = await getBalanceById(accountId);
+      const result = await this.accountService.getBalanceById(accountId);
       res.status(200).json(result);
     } catch (erro) {
       console.error(erro.message);
@@ -15,4 +16,4 @@ class AccountBalanceController {
   }
 }
 
-export default AccountBalanceController
+export default AccountBalanceController;
