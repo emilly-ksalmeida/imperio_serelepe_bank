@@ -1,0 +1,1 @@
+// refatorar o get balance para uma classe aqui:
