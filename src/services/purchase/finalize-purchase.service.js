@@ -1,5 +1,5 @@
 import { prisma } from "../../model/db.js";
-import checkPassword from "../accounts/check-password.service.js";
+import checkPassword from "../../utils/check-password.js";
 
 export class FinalizePurchaseService {
   constructor(repository = prisma) {
