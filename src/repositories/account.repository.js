@@ -5,7 +5,7 @@ class AccountRepository {
     this.repository = repository;
   }
 
-  async findById(dataBase, accountId) {
+  async findAccountById(dataBase, accountId) {
     try {
       return await dataBase.accounts.findUnique({
         where: { id: accountId },
