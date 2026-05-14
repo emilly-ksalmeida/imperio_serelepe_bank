@@ -1,15 +1,15 @@
 import { z } from "zod";
-import {
-  transferSchema,
-} from "../../model/validateSchema.js";
+import { transferSchema } from "../../model/validateSchema.js";
 
-import {
-  generateAccountStatement,
-} from "../../model/listUsers.js";
-
-import transfer from "../../model/transfers.js";
+import AccountService from "../../services/accounts/account.service.js";
+import TransferService from "../../services/transfers/transfer.service.js";
 
 class TransactionsController {
+  constructor(accountService = new AccountService(), transferService = new TransferService()) {
+    this.accountService = accountService;
+    this.transferService = transferService;
+  }
+
   async makeTransfer(req, res) {
     try {
       const data = req.body;
@@ -18,12 +18,11 @@ class TransactionsController {
         const pretty = z.prettifyError(validatedData.error);
         throw new Error(pretty);
       }
-      const { userAccountId } = req.dataCurrentUser;
-      const atualizedData = {
-        userAccountId: userAccountId.id,
-        ...data,
-      };
-      const result = await transfer(atualizedData);
+      
+      const authenticatedAccount = req.dataCurrentUser.userAccountId;
+      
+      const result = await this.transferService.execute(data, authenticatedAccount);
+
       res.status(201).json(result);
     } catch (erro) {
       console.error(erro);
@@ -34,14 +33,13 @@ class TransactionsController {
   async getStatement(req, res) {
     try {
       const accountId = req.dataCurrentUser.userAccountId.id;
-      const result = await generateAccountStatement(accountId);
+      const result = await this.accountService.generateAccountStatement(accountId);
       res.status(200).json(result);
     } catch (erro) {
       console.error(erro.message);
       res.status(500).json({ Erro: erro.message });
-    }
+    } 
   }
-
 }
 
-export default TransactionsController
+export default TransactionsController;

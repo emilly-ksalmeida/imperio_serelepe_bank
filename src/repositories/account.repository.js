@@ -5,20 +5,35 @@ class AccountRepository {
     this.repository = repository;
   }
 
-  async balanceById(accountId) {
+  async findAccountById(dataBase, accountId) {
     try {
-      const balance = await this.repository.accounts.findUnique({
+      return await dataBase.accounts.findUnique({
+        where: { id: accountId },
+      });
+    } catch (error) {
+      this.#handleDatabaseError(error);
+    }
+  }
+
+  async findBalanceById(accountId) {
+    try {
+      return await this.repository.accounts.findUnique({
         where: { id: accountId },
         select: { balance: true },
       });
-      return balance;
     } catch (error) {
-      if (error instanceof prismaImport.PrismaClientInitializationError) {
-        throw new Error("Ocorreu um erro, tente novamente mais tarde", {
-          cause: error,
-        });
-      }
-      throw error;
+      this.#handleDatabaseError(error);
+    }
+  }
+
+  async updateBalance(dataBase, accountId, balance) {
+    try {
+      return await dataBase.accounts.update({
+        where: { id: accountId },
+        data: { balance },
+      });
+    } catch (error) {
+      this.#handleDatabaseError(error);
     }
   }
 
@@ -65,6 +80,15 @@ class AccountRepository {
       }
       throw error;
     }
+  }
+
+  #handleDatabaseError(error) {
+    if (error instanceof prismaImport.PrismaClientInitializationError) {
+      throw new Error("Ocorreu um erro, tente novamente mais tarde.", {
+        cause: error,
+      });
+    }
+    throw error;
   }
 }
 
