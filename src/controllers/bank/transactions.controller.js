@@ -19,9 +19,9 @@ class TransactionsController {
         throw new Error(pretty);
       }
       
-      const { userAccountId } = req.dataCurrentUser;
+      const authenticatedAccount = req.dataCurrentUser.userAccountId;
       
-      const result = await this.transferService.execute(data, userAccountId);
+      const result = await this.transferService.execute(data, authenticatedAccount);
 
       res.status(201).json(result);
     } catch (erro) {
