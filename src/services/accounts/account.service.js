@@ -7,7 +7,7 @@ class AccountService {
 
   async getBalanceById(accountId) {
     try {
-      const userBalance = await this.accountRepository.balanceById(accountId);
+      const userBalance = await this.accountRepository.findBalanceById(accountId);
       return userBalance;
     } catch (error) {
       console.log(error);
