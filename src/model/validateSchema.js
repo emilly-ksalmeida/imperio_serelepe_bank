@@ -104,8 +104,7 @@ export const resetUserSchema = z.object({
     .regex(/^[0-9]+$/, "A senha deve conter apenas números."),
 });
 
-export const productSchema = z.object({
-  sellerId: z.string().nonempty("ID do vendedor é obrigatório."),
+export const createProductSchema = z.strictObject({
   name: z.string().refine(
       (name) => name.trim().length > 0,
       "Nome não pode conter apenas espaços.",
