@@ -127,7 +127,7 @@ export const createProductSchema = z.strictObject({
   imgUrl: z.string().max(200).optional(),
 });
 
-export const updateProductSchema = z.object({
+export const updateProductSchema = z.strictObject({
   name: z.string().refine(
       (name) => name.trim().length > 0,
       "Nome não pode conter apenas espaços.",
