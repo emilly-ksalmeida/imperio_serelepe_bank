@@ -6,7 +6,9 @@ import {
 } from "../../model/validateSchema.js";
 
 import ProductsService from "../../services/products/products.service.js";
-import ProductsError from "../../repositories/products.error.js";
+import ProductsError from "../../errors/productsError.error.js";
+import { ValidationError } from "../../errors/validationError.error.js";
+import { AppError } from "../../errors/app.error.js";
 
 class ProductsController {
   constructor(productsService = new ProductsService()) {
@@ -36,14 +38,17 @@ class ProductsController {
   async createProduct(req, res) {
     try {
       const productData = req.body;
+      const sellerId = req.dataCurrentUser.id;
+
       const validatedProductData = productSchema.safeParse(productData);
       if (!validatedProductData.success) {
         const pretty = z.prettifyError(validatedProductData.error);
-        throw new ProductsError(pretty, 422);
+        throw new ValidationError(pretty);
       }
-
-      const product =
-        await this.productsService.newProduct(validatedProductData);
+      const product = await this.productsService.newProduct({
+        ...validatedProductData.data,
+        sellerId: sellerId,
+      });
 
       res.status(201).json(product);
     } catch (error) {
@@ -88,11 +93,10 @@ class ProductsController {
   }
 
   #handleError(error, res) {
-    if (error instanceof ProductsError) {
-      res.status(error.statusCode).json({ Erro: error.message });
-    } else {
-      res.status(500).json({ Erro: "Erro interno do servidor." });
+    if (error instanceof AppError) {
+      return res.status(error.statusCode).json({ error: error.message });
     }
+    return res.status(500).json({ error: "Erro interno do servidor." });
   }
 }
 
