@@ -1,9 +1,14 @@
 import { z } from "zod";
 
-import { productSchema, updateProductSchema } from "../../model/validateSchema.js";
+import {
+  createProductSchema,
+  updateProductSchema,
+} from "../../model/validateSchema.js";
 
-import ProductsService from "../../model/products.service.js";
-import { prismaImport } from "../../model/db.js";
+import ProductsService from "../../services/products/products.service.js";
+import { ValidationError } from "../../errors/products/validationError.error.js";
+import { AppError } from "../../errors/app.error.js";
+import { DatabaseError } from "../../errors/products/dataBaseError.error.js";
 
 class ProductsController {
   constructor(productsService = new ProductsService()) {
@@ -14,9 +19,8 @@ class ProductsController {
     try {
       const allProducts = await this.productsService.getAllProducts();
       res.status(200).json(allProducts);
-    } catch (erro) {
-      console.error(erro.message);
-      res.status(500).json({ Erro: erro.message });
+    } catch (error) {
+      return this.#handleError(error, res);
     }
   }
 
@@ -26,25 +30,30 @@ class ProductsController {
       const sellerProducts =
         await this.productsService.getProductsBySeller(sellerId);
       res.status(200).json(sellerProducts);
-    } catch (erro) {
-      console.error(erro.message);
-      res.status(403).json({ Erro: erro.message });
+    } catch (error) {
+      return this.#handleError(error, res);
     }
   }
 
   async createProduct(req, res) {
     try {
       const productData = req.body;
-      const validatedProductData = productSchema.safeParse(productData);
+      const sellerId = req.dataCurrentUser.id;
+
+      const validatedProductData = createProductSchema.safeParse(productData);
+
       if (!validatedProductData.success) {
         const pretty = z.prettifyError(validatedProductData.error);
-        throw new Error(pretty);
+        throw new ValidationError(pretty);
       }
-      const product = await this.productsService.newProduct(productData);
+      const product = await this.productsService.newProduct({
+        ...validatedProductData.data,
+        sellerId: sellerId,
+      });
+
       res.status(201).json(product);
-    } catch (erro) {
-      console.error(erro.message);
-      res.status(500).json({ Erro: erro.message });
+    } catch (error) {
+      return this.#handleError(error, res);
     }
   }
 
@@ -53,10 +62,11 @@ class ProductsController {
       const { productId } = req.params;
       const updateData = req.body;
       const currentUserId = req.dataCurrentUser.id;
+
       const validatedNewData = updateProductSchema.safeParse(updateData);
       if (!validatedNewData.success) {
         const pretty = z.prettifyError(validatedNewData.error);
-        throw new Error(pretty);
+        throw new ValidationError(pretty, 422);
       }
       const updatedProduct = await this.productsService.updateProduct(
         productId,
@@ -64,23 +74,13 @@ class ProductsController {
         updateData,
       );
       res.status(200).json(updatedProduct);
-    } catch (erro) {
-      console.log(erro);
-      if (erro instanceof prismaImport.PrismaClientKnownRequestError) {
-        if (erro.code === "P2025") {
-          return res
-            .status(403)
-            .json({ Erro: "Não é possível atualizar este produto" });
-        }
-        return res
-          .status(404)
-          .json({ Erro: "Não é possível atualizar este produto" });
-      }
-      res.status(422).json({ Erro: erro.message });
+    } catch (error) {
+      console.error(error);
+      return this.#handleError(error, res);
     }
   }
 
-  async deleteProduct(req, res){
+  async deleteProduct(req, res) {
     try {
       const { productId } = req.params;
       const currentUserId = req.dataCurrentUser.id;
@@ -89,19 +89,19 @@ class ProductsController {
         currentUserId,
       );
       res.status(204).json("Produto deletado");
-    } catch (erro) {
-      if (erro instanceof prismaImport.PrismaClientKnownRequestError) {
-        if (erro.code === "P2025") {
-          return res
-            .status(403)
-            .json({ Erro: "Não é possível deletar este produto" });
-        }
-        return res
-          .status(404)
-          .json({ Erro: "Não é possível deletar este produto" });
-      }
-      res.status(422).json({ Erro: erro.message });
+    } catch (error) {
+      return this.#handleError(error, res);
     }
+  }
+
+  #handleError(error, res) {
+    if (error instanceof AppError) {
+      return res.status(error.statusCode).json({ error: error.message });
+    }
+    if (error instanceof DatabaseError) {
+      return res.status(500).json({ error: error.message });
+    }
+    return res.status(500).json({ error: "Erro interno do servidor." });
   }
 }
 
