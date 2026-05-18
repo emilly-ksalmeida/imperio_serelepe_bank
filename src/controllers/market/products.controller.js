@@ -1,14 +1,14 @@
 import { z } from "zod";
 
 import {
-  productSchema,
+  createProductSchema,
   updateProductSchema,
 } from "../../model/validateSchema.js";
 
 import ProductsService from "../../services/products/products.service.js";
-import ProductsError from "../../errors/productsError.error.js";
-import { ValidationError } from "../../errors/validationError.error.js";
+import { ValidationError } from "../../errors/products/validationError.error.js";
 import { AppError } from "../../errors/app.error.js";
+import { DatabaseError } from "../../errors/products/dataBaseError.error.js";
 
 class ProductsController {
   constructor(productsService = new ProductsService()) {
@@ -40,7 +40,8 @@ class ProductsController {
       const productData = req.body;
       const sellerId = req.dataCurrentUser.id;
 
-      const validatedProductData = productSchema.safeParse(productData);
+      const validatedProductData = createProductSchema.safeParse(productData);
+
       if (!validatedProductData.success) {
         const pretty = z.prettifyError(validatedProductData.error);
         throw new ValidationError(pretty);
@@ -65,7 +66,7 @@ class ProductsController {
       const validatedNewData = updateProductSchema.safeParse(updateData);
       if (!validatedNewData.success) {
         const pretty = z.prettifyError(validatedNewData.error);
-        throw new ProductsError(pretty, 422);
+        throw new ValidationError(pretty, 422);
       }
       const updatedProduct = await this.productsService.updateProduct(
         productId,
@@ -74,6 +75,7 @@ class ProductsController {
       );
       res.status(200).json(updatedProduct);
     } catch (error) {
+      console.error(error);
       return this.#handleError(error, res);
     }
   }
@@ -95,6 +97,9 @@ class ProductsController {
   #handleError(error, res) {
     if (error instanceof AppError) {
       return res.status(error.statusCode).json({ error: error.message });
+    }
+    if (error instanceof DatabaseError) {
+      return res.status(500).json({ error: error.message });
     }
     return res.status(500).json({ error: "Erro interno do servidor." });
   }

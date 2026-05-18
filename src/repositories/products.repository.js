@@ -1,5 +1,6 @@
-import { DatabaseError } from "../errors/dataBaseError.error.js";
 import { prisma, prismaImport } from "../model/db.js";
+import { DatabaseError } from "../errors/products/dataBaseError.error.js";
+import { NotFoundError } from "../errors/products/notFoundError.error.js";
 
 class ProductsRepository {
   constructor(repository = prisma) {
@@ -110,12 +111,10 @@ class ProductsRepository {
 
     if (error instanceof prismaImport.PrismaClientKnownRequestError) {
       if (error.code === "P2025") {
-        throw new DatabaseError("Uma operação falhou porque depende de um ou mais registros que eram necessários, mas não foram encontrados.", {
-        cause: error,
-      });
+        throw new NotFoundError("A operação falhou, produto não encontrado.");
       }
       if (error.code === "P2002"){
-        throw new DatabaseError("Falha na restrição de unicidade.", {
+        throw new DatabaseError("Esse produto já existe", {
         cause: error,
       });
       }
