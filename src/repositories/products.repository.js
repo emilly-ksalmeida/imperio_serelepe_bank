@@ -1,6 +1,6 @@
 import { prisma, prismaImport } from "../model/db.js";
-import { DatabaseError } from "../errors/products/dataBaseError.error.js";
 import { NotFoundError } from "../errors/products/notFoundError.error.js";
+import { ValidationError } from "../errors/products/validationError.error.js";
 
 class ProductsRepository {
   constructor(repository = prisma) {
@@ -16,7 +16,7 @@ class ProductsRepository {
           name: true,
           description: true,
           unitPrice: true,
-          // imgUrl: true,
+          imgUrl: true,
         },
       });
     } catch (error) {
@@ -42,13 +42,7 @@ class ProductsRepository {
     }
   }
 
-  async createProduct(
-    sellerId,
-    name,
-    description,
-    unitPrice,
-    stockQuantity
-  ) {
+  async createProduct(sellerId, name, description, unitPrice, stockQuantity) {
     try {
       return this.repository.products.create({
         data: {
@@ -56,7 +50,7 @@ class ProductsRepository {
           name,
           description,
           unitPrice,
-          stockQuantity
+          stockQuantity,
         },
         select: {
           id: true,
@@ -103,24 +97,15 @@ class ProductsRepository {
   }
 
   #handleDatabaseError(error) {
-    if (error instanceof prismaImport.PrismaClientInitializationError) {
-      throw new DatabaseError("Ocorreu um erro, tente novamente mais tarde.", {
-        cause: error,
-      });
-    }
-
     if (error instanceof prismaImport.PrismaClientKnownRequestError) {
       if (error.code === "P2025") {
         throw new NotFoundError("A operação falhou, produto não encontrado.");
       }
-      if (error.code === "P2002"){
-        throw new DatabaseError("Esse produto já existe", {
-        cause: error,
-      });
+      if (error.code === "P2002") {
+        throw new ValidationError("Esse produto já existe", {
+          cause: error,
+        });
       }
-      throw new DatabaseError("Ocorreu um erro!", {
-        cause: error,
-      });
     }
     throw error;
   }

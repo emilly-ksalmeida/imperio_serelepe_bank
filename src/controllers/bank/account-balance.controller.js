@@ -4,14 +4,10 @@ class AccountBalanceController {
   constructor(accountService = new AccountService()) {
     this.accountService = accountService;
   }
-  async getBalance(req, res) {
-    try {
-      const accountId = req.dataCurrentUser.userAccountId.id;
-      const result = await this.accountService.getBalanceById(accountId);
-      res.status(200).json(result);
-    } catch (erro) {
-      res.status(500).json({ Erro: erro.message });
-    }
+  async getBalance(req, res, _next) {
+    const accountId = req.dataCurrentUser.userAccountId.id;
+    const result = await this.accountService.getBalanceById(accountId);
+    res.status(200).json(result);
   }
 }
 

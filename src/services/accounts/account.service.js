@@ -6,13 +6,7 @@ class AccountService {
   }
 
   async getBalanceById(accountId) {
-    try {
-      const userBalance = await this.accountRepository.findBalanceById(accountId);
-      return userBalance;
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
+    return await this.accountRepository.findBalanceById(accountId);
   }
 
   async generateAccountStatement(userId) {
