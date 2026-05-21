@@ -97,7 +97,7 @@ describe("POST /make-transfer", () => {
     })
 
     describe("when the user does not have available balance", () => {
-      it("should return 400", async () => {
+      it("should return 422", async () => {
         const { user: adan, account: adanAccount } = await createUserWithAccount(prisma, {
           user: { name: "adan" },
           account: { balance: 1000 }
@@ -126,7 +126,7 @@ describe("POST /make-transfer", () => {
 
         expect(res.statusCode).toBe(422)
         expect(res.body).toEqual({
-          Erro: "Não existe saldo suficiente para mandar o valor $5000"
+          error: "Não existe saldo suficiente para enviar $e 5000"
         })
 
         const updatedAdanAccount = await prisma.accounts.findUnique({

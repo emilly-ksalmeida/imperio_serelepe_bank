@@ -9,11 +9,13 @@ import AccountBalanceController from "../controllers/bank/account-balance.contro
 import SecurityQuestionController from "../controllers/auth/security-question.controller.js";
 import PasswordResetController from "../controllers/auth/password-reset.controller.js";
 import ProductsController from "../controllers/market/products.controller.js";
-// import PurchaseController from "../controllers/market/purchase.controller.js";
+// import OrdersController from "../controllers/market/orders.controller.js";
+import errorHandler from "../errors/errorHandler.js";
 
 const routes = (app) => {
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
+
 
     const sessionsController = new SessionsController();
     const usersController = new UsersController();
@@ -22,7 +24,7 @@ const routes = (app) => {
     const securityQuestionController = new SecurityQuestionController();
     const passwordResetController = new PasswordResetController();
     const productsController = new ProductsController();
-    // const purchaseController = new PurchaseController();
+    // const ordersController = new OrdersController();
 
     // Auth routes
     app.post("/login", (req, res) => sessionsController.loginUser(req, res));
@@ -34,16 +36,21 @@ const routes = (app) => {
     app.post("/create-user", (req, res) => usersController.createUser(req, res))
 
     // Bank routes
-    app.get("/balance", verifyToken, (req, res) => accountBalanceController.getBalance(req, res));
-    app.get("/statement", verifyToken, (req, res) => transactionsController.getStatement(req, res));
-    app.post("/make-transfer", verifyToken, (req, res) => transactionsController.makeTransfer(req, res));
+    app.get("/balance", verifyToken, (req, res, next) => accountBalanceController.getBalance(req, res, next));
+    app.get("/statement", verifyToken, (req, res, next) => transactionsController.getStatement(req, res, next));
+    app.post("/make-transfer", verifyToken, (req, res, next) => transactionsController.makeTransfer(req, res, next));
 
-    // Market routes
-    app.get("/products", verifyToken, verifyRole, (req, res) => productsController.getProducts(req, res));
+    // Market routes - products management
+    app.get("/products", verifyToken, (req, res) => productsController.getProducts(req, res));
     app.post("/products", verifyToken, verifyRole, (req, res) => productsController.createProduct(req, res));
     app.get("/products/seller", verifyToken, verifyRole, (req, res) => productsController.getSellerProducts(req, res));
     app.put("/products/seller/:productId", verifyToken, verifyRole, (req, res) => productsController.updateProduct(req, res));
-  
+    // Adicionar delete app.delete("/")
+    
+    //  Market routes - orders
+    // app.post("/orders/finalize", verifyToken, (req, res) => ordersController.finalizeOrder(req, res));
+    
+    app.use(errorHandler);
 }
 
 export default routes;
