@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node";
 import express from "express";
 import verifyToken from "../middleware/verifyToken.js";
 import verifyRole from "../middleware/verifyRole.js";
@@ -50,6 +51,7 @@ const routes = (app) => {
     //  Market routes - orders
     // app.post("/orders/finalize", verifyToken, (req, res) => ordersController.finalizeOrder(req, res));
     
+    Sentry.setupExpressErrorHandler(app);
     app.use(errorHandler);
 }
 
