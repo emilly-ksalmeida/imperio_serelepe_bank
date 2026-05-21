@@ -1,4 +1,5 @@
 import { prisma, prismaImport } from "../model/db.js";
+import { NotFoundError } from "../errors/account/notFoundError.error.js";
 
 class TransferRepository {
   constructor(repository = prisma) {
@@ -21,10 +22,8 @@ class TransferRepository {
   }
 
   #handleDatabaseError(error) {
-    if (error instanceof prismaImport.PrismaClientInitializationError) {
-      throw new Error("Ocorreu um erro, tente novamente mais tarde.", {
-        cause: error,
-      });
+    if (error instanceof prismaImport.PrismaClientKnownRequestError && error.code === "P2025") {
+      throw new NotFoundError("A operação falhou, conta não encontrada.");
     }
     throw error;
   }

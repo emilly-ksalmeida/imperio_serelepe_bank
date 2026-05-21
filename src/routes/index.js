@@ -37,8 +37,8 @@ const routes = (app) => {
 
     // Bank routes
     app.get("/balance", verifyToken, (req, res, next) => accountBalanceController.getBalance(req, res, next));
-    app.get("/statement", verifyToken, (req, res) => transactionsController.getStatement(req, res));
-    app.post("/make-transfer", verifyToken, (req, res) => transactionsController.makeTransfer(req, res));
+    app.get("/statement", verifyToken, (req, res, next) => transactionsController.getStatement(req, res, next));
+    app.post("/make-transfer", verifyToken, (req, res, next) => transactionsController.makeTransfer(req, res, next));
 
     // Market routes - products management
     app.get("/products", verifyToken, (req, res) => productsController.getProducts(req, res));
