@@ -36,7 +36,7 @@ const routes = (app) => {
     app.post("/create-user", (req, res) => usersController.createUser(req, res))
 
     // Bank routes
-    app.get("/balance", verifyToken, (req, res) => accountBalanceController.getBalance(req, res));
+    app.get("/balance", verifyToken, (req, res, next) => accountBalanceController.getBalance(req, res, next));
     app.get("/statement", verifyToken, (req, res) => transactionsController.getStatement(req, res));
     app.post("/make-transfer", verifyToken, (req, res) => transactionsController.makeTransfer(req, res));
 

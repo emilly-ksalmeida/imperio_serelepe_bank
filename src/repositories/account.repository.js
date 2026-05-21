@@ -1,4 +1,5 @@
 import { prisma, prismaImport } from "../model/db.js";
+import { NotFoundError } from "../errors/account/notFoundError.error.js";
 
 class AccountRepository {
   constructor(repository = prisma) {
@@ -17,10 +18,12 @@ class AccountRepository {
 
   async findBalanceById(accountId) {
     try {
-      return await this.repository.accounts.findUnique({
+      const account = await this.repository.accounts.findUnique({
         where: { id: accountId },
         select: { balance: true },
       });
+      if (!account) throw new NotFoundError("Conta não encontrada.");
+      return account;
     } catch (error) {
       this.#handleDatabaseError(error);
     }
@@ -73,20 +76,13 @@ class AccountRepository {
       });
       return statements;
     } catch (error) {
-      if (error instanceof prismaImport.PrismaClientInitializationError) {
-        throw new Error("Ocorreu um erro, tente novamente mais tarde", {
-          cause: error,
-        });
-      }
-      throw error;
+      this.#handleDatabaseError(error);
     }
   }
 
   #handleDatabaseError(error) {
-    if (error instanceof prismaImport.PrismaClientInitializationError) {
-      throw new Error("Ocorreu um erro, tente novamente mais tarde.", {
-        cause: error,
-      });
+    if (error instanceof prismaImport.PrismaClientKnownRequestError && error.code === "P2025") {
+      throw new NotFoundError("A operação falhou, conta não encontrada.");
     }
     throw error;
   }
