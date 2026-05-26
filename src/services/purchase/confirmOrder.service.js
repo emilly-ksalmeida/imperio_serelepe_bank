@@ -3,13 +3,7 @@ import { prisma } from "../../model/db.js";
 import checkPassword from "../../utils/check-password.js";
 import AccountService from "../accounts/account.service.js";
 import { BusinessError } from "../../errors/transfer/businessError.error.js";
-/*
--> confirmação da possibilidade de efetuar a compra --> ConfirmOrderService
-        verificar  senha - ok
-        verificar estoque de todos os produtos da lista - ok
-        calcular total da compra - ok
-        verificar saldo do usuário - ok
-*/
+
 export class ConfirmOrderService {
   constructor(
     productsStockValidatorService = new ProductsStockValidatorService(),
@@ -36,7 +30,9 @@ export class ConfirmOrderService {
       payload.purchase,
     );
 
-    if (!verifyProducts[0].success) return { success: false, details: verifyProducts };
+    if (!verifyProducts[0].success) {
+      return { success: false, details: verifyProducts };
+    }
 
     const orderTotal = this.#calculateOrderTotal(payload.purchase);
 
