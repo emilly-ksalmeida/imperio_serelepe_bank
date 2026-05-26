@@ -46,7 +46,7 @@ export class ConfirmOrderService {
         `Não existe saldo suficiente para efetuar uma compra no valor de $e ${orderTotal}`,
       );
 
-    return { status: true, details: verifyProducts };
+    return { success: true, details: verifyProducts };
   }
 
   async #findPasswordHash(id) {
