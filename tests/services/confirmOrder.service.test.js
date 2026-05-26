@@ -35,6 +35,36 @@ describe("ConfirmOrderService", () => {
     );
   });
 
+  describe("execute() com validação de estoque", () => {
+    it("retorna success false quando a validação de estoque contém erros mistos", async () => {
+      mockRepository.users.findUnique.mockResolvedValue(userFromDb);
+      mockCheckPassword.mockResolvedValue(true);
+
+      const mixedResult = [
+        { success: true, code: "PRODUCT_AVAILABLE" },
+        { success: false, code: "PRODUCT_NOT_FOUND", details: { id: "prod-x" } },
+        { success: false, code: "INSUFFICIENT_STOCK", details: { id: "prod-y" } },
+      ];
+      mockStockValidator.execute.mockResolvedValue(mixedResult);
+
+      const payload = {
+        userId: "user-1",
+        userAccountId: "acc-1",
+        password: "1234",
+        purchase: [
+          { id: "prod-1", quantity: 1, unitPriceOrdered: 100 },
+          { id: "prod-x", quantity: 1, unitPriceOrdered: 100 },
+          { id: "prod-y", quantity: 99, unitPriceOrdered: 100 },
+        ],
+      };
+
+      const result = await service.execute(payload);
+
+      expect(result).toEqual({ success: false, details: mixedResult });
+      expect(mockAccountService.getBalanceById).not.toHaveBeenCalled();
+    });
+  });
+
   describe("#calculateOrderTotal (comportamento observado via execute)", () => {
     it("lança BusinessError com saldo 0 indicando que o total foi calculado", async () => {
       mockRepository.users.findUnique.mockResolvedValue(userFromDb);
@@ -98,7 +128,7 @@ describe("ConfirmOrderService", () => {
 
       const result = await service.execute(payload);
 
-      expect(result).toMatchObject({ status: true });
+      expect(result).toMatchObject({ success: true });
     });
 
     it("retorna sucesso com lista vazia e saldo 0 confirmando total = 0", async () => {
@@ -116,7 +146,7 @@ describe("ConfirmOrderService", () => {
 
       const result = await service.execute(payload);
 
-      expect(result).toMatchObject({ status: true });
+      expect(result).toMatchObject({ success: true });
     });
   });
 });
