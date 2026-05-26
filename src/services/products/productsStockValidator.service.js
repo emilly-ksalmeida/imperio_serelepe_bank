@@ -32,7 +32,7 @@ export class ProductsStockValidatorService {
         code: "PRODUCT_NOT_FOUND",
         message: "Produto não encontrado",
         details: {
-          id: product.id,
+          id: productData.id,
         },
       });
     }
