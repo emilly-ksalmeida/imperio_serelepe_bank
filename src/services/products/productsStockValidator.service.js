@@ -1,4 +1,4 @@
-import ProductsStockRepository from "../../repositories/products.repository.js";
+import ProductsStockRepository from "../../repositories/productsStock.repository.js";
 import { ProductPriceChangedError } from "../../errors/products/productPriceChangedError.error.js";
 
 export class ProductsStockValidatorService {
