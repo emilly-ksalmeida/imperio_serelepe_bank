@@ -1,8 +1,9 @@
-import ProductsStockValidatorService from "../products/productsStockValidator.service";
+import ProductsStockValidatorService from "../products/productsStockValidator.service.js";
 import { prisma } from "../../model/db.js";
 import checkPassword from "../../utils/check-password.js";
 import AccountService from "../accounts/account.service.js";
 import { BusinessError } from "../../errors/transfer/businessError.error.js";
+import { NotFoundError } from "../../errors/account/notFoundError.error.js";
 
 export class ConfirmOrderService {
   constructor(
@@ -23,14 +24,14 @@ export class ConfirmOrderService {
     );
 
     if (!verifyPassword) {
-      throw new Error("Senha da conta incorreta");
+      throw new BusinessError("Senha da conta incorreta");
     }
 
     const verifyProducts = await this.productsStockValidatorService.execute(
       payload.purchase,
     );
 
-    if (!verifyProducts[0].success) {
+    if (verifyProducts.some(item => !item.success)) {
       return { success: false, details: verifyProducts };
     }
 
@@ -49,7 +50,7 @@ export class ConfirmOrderService {
   }
 
   async #findPasswordHash(id) {
-    return await this.repository.users.findUnique({
+    const password = await this.repository.users.findUnique({
       where: {
         id: id,
       },
@@ -57,6 +58,9 @@ export class ConfirmOrderService {
         passwordHash: true,
       },
     });
+    if(!password) throw new NotFoundError("Usuário não encontrado");
+
+    return password;
   }
 
   #calculateOrderTotal(list) {
