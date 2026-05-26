@@ -26,6 +26,17 @@ export class ProductsStockValidatorService {
       productData.id,
     );
 
+    if (!product) {
+      return this.errors.push({
+        success: false,
+        code: "PRODUCT_NOT_FOUND",
+        message: "Produto não encontrado",
+        details: {
+          id: product.id,
+        },
+      });
+    }
+
     if (productData.unitPriceOrdered !== product.unitPrice) {
       throw new ProductPriceChangedError();
     }
