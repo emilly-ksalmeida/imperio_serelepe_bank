@@ -10,6 +10,7 @@ class ProductsStockRepository {
       return this.repository.products.findUnique({
         where: { id: productId },
         select: {
+          id: true,
           name: true,
           unitPrice: true,
           stockQuantity: true,
