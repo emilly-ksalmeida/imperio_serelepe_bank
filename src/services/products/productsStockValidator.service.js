@@ -64,6 +64,7 @@ export class ProductsStockValidatorService {
         name: product.name,
         requestedQuantity: productData.quantity,
         availableQuantity: product.stockQuantity,
+        sellerId: product.sellerId,
       },
     });
   }

@@ -14,6 +14,7 @@ class ProductsStockRepository {
           name: true,
           unitPrice: true,
           stockQuantity: true,
+          sellerId: true,
         },
       });
     } catch (error) {
