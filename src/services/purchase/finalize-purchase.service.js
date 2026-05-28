@@ -1,38 +1,22 @@
-import { prisma } from "../../model/db.js";
-import checkPassword from "../../utils/check-password.js";
+import { ConfirmOrderService } from "./confirmOrder.service";
+import { RegisterOrderService } from "./registerOrder.service";
+import { PurchaseConfirmationError } from "../../errors/purchase/purchaseConfirmationError.error";
 
 export class FinalizePurchaseService {
-  constructor(repository = prisma) {
-    this.repository = repository;
+  constructor(confirmOrderService = new ConfirmOrderService(), registerOrderService = new RegisterOrderService()) {
+    this.confirmOrderService = confirmOrderService;
+    this.registerOrderService = registerOrderService;
   }
 
   async execute(payload) {
-    console.log(payload);
-    const hash = await this.#findPasswordHash(payload.userId);
-    const verifyPassword = await checkPassword(
-      payload.password,
-      hash.passwordHash,
-    );
-    console.log(verifyPassword);
+    // validatedOrder pode ter propriedade success com valor true ou false
+    const validatedOrder = await this.confirmOrderService.execute(payload);
 
-    if (!verifyPassword) {
-      throw new Error("Senha da conta incorreta");
+    if (!validatedOrder.success) {
+      throw new PurchaseConfirmationError(validatedOrder);
     }
-    // confirm order service
 
-    return;
-  }
+    const createdPurchase = await this.registerOrderService.execute(validatedOrder.details);
 
-  async #findPasswordHash(id) {
-    return await this.repository.users.findUnique({
-      where: {
-        id: id,
-      },
-      select: {
-        passwordHash: true,
-      },
-    });
   }
 }
-
-export default FinalizePurchaseService;
