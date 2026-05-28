@@ -1,9 +1,10 @@
-import ProductsStockValidatorService from "../products/productsStockValidator.service.js";
 import { prisma } from "../../model/db.js";
+import ProductsStockValidatorService from "../products/productsStockValidator.service.js";
 import checkPassword from "../../utils/check-password.js";
 import AccountService from "../accounts/account.service.js";
 import { BusinessError } from "../../errors/transfer/businessError.error.js";
 import { NotFoundError } from "../../errors/account/notFoundError.error.js";
+import calculateOrderTotal from "../../utils/calculateOrderTotal.js";
 
 export class ConfirmOrderService {
   constructor(
@@ -35,7 +36,7 @@ export class ConfirmOrderService {
       return { success: false, details: verifyProducts };
     }
 
-    const orderTotal = this.#calculateOrderTotal(payload.purchase);
+    const orderTotal = calculateOrderTotal(payload.purchase);
 
     const currentBalance = await this.accountService.getBalanceById(
       payload.userAccountId,
@@ -61,14 +62,5 @@ export class ConfirmOrderService {
     if(!password) throw new NotFoundError("Usuário não encontrado");
 
     return password;
-  }
-
-  #calculateOrderTotal(list) {
-    let total = 0;
-    list.forEach((item) => {
-      const result = item.quantity * item.unitPriceOrdered;
-      total = total + result;
-    });
-    return total;
   }
 }

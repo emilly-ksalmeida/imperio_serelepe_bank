@@ -49,7 +49,7 @@ export class ProductsStockValidatorService {
         details: {
           id: product.id,
           name: product.name,
-          requestedQuantity: productData.quantity,
+          quantity: productData.quantity,
           availableQuantity: product.stockQuantity,
         },
       });
@@ -62,8 +62,9 @@ export class ProductsStockValidatorService {
       details: {
         id: product.id,
         name: product.name,
-        requestedQuantity: productData.quantity,
+        quantity: productData.quantity,
         availableQuantity: product.stockQuantity,
+        unitPriceOrdered:productData.unitPriceOrdered,
         sellerId: product.sellerId,
       },
     });
