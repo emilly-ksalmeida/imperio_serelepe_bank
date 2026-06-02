@@ -29,9 +29,10 @@ class ProductsStockRepository {
     }
   }
 
-  async updateQuantityById(productId, updatedQuantity) {
+  async updateQuantityById(productId, updatedQuantity, tx) {
     try {
-      return this.repository.products.update({
+      const client = tx ?? this.repository;
+      return client.products.update({
         where: { id: productId },
         data: {
           stockQuantity: updatedQuantity,

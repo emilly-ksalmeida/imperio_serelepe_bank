@@ -1,8 +1,8 @@
+import { prisma } from "../../model/db.js";
 import { InsufficientProductStockError } from "../../errors/products/insufficientProductStockError.error.js";
 import ProductsStockRepository from "../../repositories/productsStock.repository.js";
 import calculateOrderTotal from "../../utils/calculateOrderTotal.js";
-import AccountService from "../accounts/account.service.js";
-import TransferService from "../transfers/transfer.service.js";
+import { PurchaseTransferService } from "./purchaseTransfer.service.js";
 
 /*
   order é um array de :
@@ -24,67 +24,62 @@ import TransferService from "../transfers/transfer.service.js";
 export class RegisterOrderService {
   constructor(
     productsStockRepository = new ProductsStockRepository(),
-    transferservice = new TransferService(),
-    accountService = new AccountService(),
+    purchaseTransferService = new PurchaseTransferService(),
   ) {
     this.productsStockRepository = productsStockRepository;
-    this.transferservice = transferservice;
-    this.accountService = accountService;
+    this.purchaseTransferService = purchaseTransferService;
   }
 
   async execute(order, userData) {
-    // dar baixa no estoque
-    const { userAccountId, password } = userData;
+    const { userAccountId } = userData;
 
-    for (let item of order) {
-      const remainingStock =
-        item.details.availableQuantity - item.details.quantity;
+    return await prisma.$transaction(async (tx) => {
+      for (const item of order) {
+        const remainingStock =
+          item.details.availableQuantity - item.details.quantity;
 
-      if (remainingStock < 0) {
-        throw new InsufficientProductStockError(
-          "Este produto não está disponível na quantidade desejada",
+        if (remainingStock < 0) {
+          throw new InsufficientProductStockError(
+            "Este produto não está disponível na quantidade desejada",
+          );
+        }
+
+        await this.productsStockRepository.updateQuantityById(
+          item.details.id,
+          remainingStock,
+          tx,
         );
       }
 
-      await this.productsStockRepository.updateQuantityById(
-        item.details.id,
-        remainingStock,
-      );
-    }
-    // Etapa classificação dos itens por vendedor
-    const groupBySellerIds = new Map();
+      const groupBySellerIds = new Map();
 
-    for (const item of order) {
-      const sellerId = item.details.sellerId;
+      for (const item of order) {
+        const sellerId = item.details.sellerId;
 
-      if (!groupBySellerIds.has(sellerId)) {
-        groupBySellerIds.set(sellerId, []);
+        if (!groupBySellerIds.has(sellerId)) {
+          groupBySellerIds.set(sellerId, []);
+        }
+
+        groupBySellerIds.get(sellerId).push(item.details);
       }
 
-      const currentValue = groupBySellerIds.get(sellerId);
-      currentValue.push(item.details);
+      const completedPayments = [];
 
-      groupBySellerIds.set(sellerId, currentValue);
-    }
+      for (const seller of groupBySellerIds) {
+        const orderItems = seller[1];
+        const totalValue = calculateOrderTotal(orderItems);
+        const accountSellerId = orderItems[0].sellerAccountId;
 
-    // Etapa de pagamento
-    let pagamentos = [];
+        const payment = await this.purchaseTransferService.execute(
+          tx,
+          userAccountId,
+          accountSellerId,
+          totalValue,
+        );
+        completedPayments.push(payment);
+      }
 
-    for (let seller of groupBySellerIds) {
-      const accountSellerId = seller[1].sellerAccountId;
-      const orderItems = seller[1];
-      const totalValue = calculateOrderTotal(orderItems);
-
-      const pagamento = await this.transferservice.execute(
-        {
-          toAccountId: accountSellerId,
-          value: totalValue,
-          accountPassword: password,
-        },
-        userAccountId,
-      );
-      pagamentos.push(pagamento);
-    }
-    return { resultado: pagamentos };
+      return { result: completedPayments };
+    });
   }
 }
