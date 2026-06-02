@@ -10,7 +10,7 @@ import AccountBalanceController from "../controllers/bank/account-balance.contro
 import SecurityQuestionController from "../controllers/auth/security-question.controller.js";
 import PasswordResetController from "../controllers/auth/password-reset.controller.js";
 import ProductsController from "../controllers/market/products.controller.js";
-// import OrdersController from "../controllers/market/orders.controller.js";
+import OrdersController from "../controllers/market/orders.controller.js";
 import errorHandler from "../errors/errorHandler.js";
 
 const routes = (app) => {
@@ -24,7 +24,7 @@ const routes = (app) => {
   const securityQuestionController = new SecurityQuestionController();
   const passwordResetController = new PasswordResetController();
   const productsController = new ProductsController();
-  // const ordersController = new OrdersController();
+  const ordersController = new OrdersController();
 
   // Auth routes
   app.post("/login", (req, res) => sessionsController.loginUser(req, res));
@@ -68,7 +68,7 @@ const routes = (app) => {
   // Adicionar delete app.delete("/")
 
   //  Market routes - orders
-  // app.post("/orders/finalize", verifyToken, (req, res) => ordersController.finalizeOrder(req, res));
+  app.post("/orders/finalize", verifyToken, (req, res) => ordersController.finalizeOrder(req, res));
 
   app.get("/debug-sentry", (_req, _res) => {
     throw new Error("Sentry funcionando");
