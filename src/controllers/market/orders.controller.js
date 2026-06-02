@@ -6,7 +6,7 @@ class OrdersController {
   }
 
   async finalizeOrder(req, res) {
-    try {
+    
       const purchaseData = req.body;
       const { id, userAccountId } = req.dataCurrentUser;
       const orderPayload = {
@@ -14,12 +14,10 @@ class OrdersController {
         userAccountId: userAccountId.id,
         ...purchaseData,
       };
-      await this.finalizePurchaseService.execute(orderPayload);
+      const result = await this.finalizePurchaseService.execute(orderPayload);
 
-      res.status(201).json({ message: "Compra realizada com sucesso!" });
-    } catch (erro) {
-      res.status(500).json({ message: erro.message });
-    }
+      res.status(201).json({ message: "Compra realizada com sucesso!", details: result });
+    
   }
 }
 export default OrdersController;
