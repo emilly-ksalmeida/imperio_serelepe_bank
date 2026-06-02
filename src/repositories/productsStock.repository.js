@@ -15,6 +15,13 @@ class ProductsStockRepository {
           unitPrice: true,
           stockQuantity: true,
           sellerId: true,
+          seller: {
+            select: {
+              account: {
+                select: { id: true },
+              },
+            },
+          },
         },
       });
     } catch (error) {

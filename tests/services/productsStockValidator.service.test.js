@@ -17,6 +17,12 @@ describe("ProductsStockValidatorService", () => {
     name: "Produto Teste",
     unitPrice: { equals: (val) => val === 1000 },
     stockQuantity: 10,
+    sellerId: "seller-1",
+    seller: {
+      account: {
+        id: "acc-seller-1",
+      },
+    },
   };
 
   beforeEach(() => {

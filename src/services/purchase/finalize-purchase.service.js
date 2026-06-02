@@ -15,7 +15,12 @@ export default class FinalizePurchaseService {
       throw new PurchaseConfirmationError(validatedOrder);
     }
 
-    const createdPurchase = await this.registerOrderService.execute(validatedOrder.details, payload.password, {id: payload.userAccountId});
+    const userData = {
+      userAccountId: payload.userAccountId,
+      password: payload.password
+    }
+
+    const createdPurchase = await this.registerOrderService.execute(validatedOrder.details, userData);
 
     return createdPurchase;
 

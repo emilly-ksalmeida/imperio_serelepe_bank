@@ -16,24 +16,34 @@ import TransferService from "../transfers/transfer.service.js";
       quantity: 1,
       availableQuantity: 100,
       unitPriceOrdered: 500,
-      sellerId: '235b4126-5868-414a-acb7-cd50f428cf99'
+      sellerId: '235b4126-5868-414a-acb7-cd50f428cf99',
+      sellerAccountId: product.seller.account.id,
     }
 }
 */
 export class RegisterOrderService {
-  constructor(productsStockRepository = new ProductsStockRepository(), transferservice = new TransferService(), accountService = new AccountService()) {
+  constructor(
+    productsStockRepository = new ProductsStockRepository(),
+    transferservice = new TransferService(),
+    accountService = new AccountService(),
+  ) {
     this.productsStockRepository = productsStockRepository;
     this.transferservice = transferservice;
     this.accountService = accountService;
   }
 
-  async execute(order, password, userAccountId) {
+  async execute(order, userData) {
     // dar baixa no estoque
-    for (let item of order) {
-      const remainingStock = item.details.availableQuantity - item.details.quantity;
+    const { userAccountId, password } = userData;
 
-      if(remainingStock < 0){
-        throw new InsufficientProductStockError("Este produto não está disponível na quantidade desejada");
+    for (let item of order) {
+      const remainingStock =
+        item.details.availableQuantity - item.details.quantity;
+
+      if (remainingStock < 0) {
+        throw new InsufficientProductStockError(
+          "Este produto não está disponível na quantidade desejada",
+        );
       }
 
       await this.productsStockRepository.updateQuantityById(
@@ -41,7 +51,7 @@ export class RegisterOrderService {
         remainingStock,
       );
     }
-  // Etapa classificação dos itens por vendedor
+    // Etapa classificação dos itens por vendedor
     const groupBySellerIds = new Map();
 
     for (const item of order) {
@@ -60,20 +70,21 @@ export class RegisterOrderService {
     // Etapa de pagamento
     let pagamentos = [];
 
-    for (let seller of groupBySellerIds){
-      const sellerId = seller[0];
+    for (let seller of groupBySellerIds) {
+      const accountSellerId = seller[1].sellerAccountId;
       const orderItems = seller[1];
       const totalValue = calculateOrderTotal(orderItems);
 
-      const accountSellerId = await this.accountService.getAccountId(sellerId);
- 
-       const pagamento = await this.transferservice.execute({
-        toAccountId: accountSellerId.id,
-        value: totalValue,
-        accountPassword: password
-        }, userAccountId)
+      const pagamento = await this.transferservice.execute(
+        {
+          toAccountId: accountSellerId,
+          value: totalValue,
+          accountPassword: password,
+        },
+        userAccountId,
+      );
       pagamentos.push(pagamento);
     }
-   return {resultado: pagamentos};
+    return { resultado: pagamentos };
   }
 }

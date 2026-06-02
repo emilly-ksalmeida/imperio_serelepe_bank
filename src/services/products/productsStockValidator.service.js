@@ -66,6 +66,7 @@ export class ProductsStockValidatorService {
         availableQuantity: product.stockQuantity,
         unitPriceOrdered:productData.unitPriceOrdered,
         sellerId: product.sellerId,
+        sellerAccountId: product.seller.account.id,
       },
     });
   }
