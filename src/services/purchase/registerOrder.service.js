@@ -1,86 +1,79 @@
-import ProductsStockRepository from "../../repositories/productsStock.repository";
+import { InsufficientProductStockError } from "../../errors/products/insufficientProductStockError.error.js";
+import ProductsStockRepository from "../../repositories/productsStock.repository.js";
+import calculateOrderTotal from "../../utils/calculateOrderTotal.js";
+import AccountService from "../accounts/account.service.js";
+import TransferService from "../transfers/transfer.service.js";
 
 /*
-processar a compra
-
---- dar baixa no estoque de cada produto -ok
---- pegar a lista de compra e separar por vendedor. -ok
---- faturar cada item/transferir dinheiro para o vendedor
---- registrar na tabela order
---- registrar na tabela order-items
-
-processo finalizado
+  order é um array de :
+{
+   success: true,
+    code: 'PRODUCT_AVAILABLE',
+    message: 'Produto disponível em estoque',
+    details: {
+      id: 49,
+      name: 'Paçoca',
+      quantity: 1,
+      availableQuantity: 100,
+      unitPriceOrdered: 500,
+      sellerId: '235b4126-5868-414a-acb7-cd50f428cf99'
+    }
+}
 */
 export class RegisterOrderService {
-  constructor(productsStockRepository = new ProductsStockRepository()) {
+  constructor(productsStockRepository = new ProductsStockRepository(), transferservice = new TransferService(), accountService = new AccountService()) {
     this.productsStockRepository = productsStockRepository;
+    this.transferservice = transferservice;
+    this.accountService = accountService;
   }
 
-  async execute(order) {
-    /*
-      order é um array de :
-    {
-      success: true,
-      code: "PRODUCT_AVAILABLE",
-      message: "Produto disponível em estoque",
-      details: {
-        id: product.id,
-        name: product.name,
-        quantity: productData.quantity,
-        availableQuantity: product.stockQuantity,
-        unitPriceOrdered:productData.unitPriceOrdered,
-        sellerId: product.sellerId,
-      },
-    }
-    */
+  async execute(order, password, userAccountId) {
     // dar baixa no estoque
-
     for (let item of order) {
-      return await this.productsStockRepository.updateQuantityById(
+      const remainingStock = item.details.availableQuantity - item.details.quantity;
+
+      if(remainingStock < 0){
+        throw new InsufficientProductStockError("Este produto não está disponível na quantidade desejada");
+      }
+
+      await this.productsStockRepository.updateQuantityById(
         item.details.id,
-        item.details.quantity,
+        remainingStock,
       );
     }
-    /**
-    ----> separar o valor total dos items comprados por vendedor, o resultado disso vai ser usado para realizar o pagamento e registrar nas tabelas Order e Order_items
-
-    ***
-     const groupBySellerIds = new Map();
+  // Etapa classificação dos itens por vendedor
+    const groupBySellerIds = new Map();
 
     for (const item of order) {
       const sellerId = item.details.sellerId;
-    
+
       if (!groupBySellerIds.has(sellerId)) {
         groupBySellerIds.set(sellerId, []);
       }
 
       const currentValue = groupBySellerIds.get(sellerId);
       currentValue.push(item.details);
-  
-      groupBySellerIds.set(sellerID, currentValue);
+
+      groupBySellerIds.set(sellerId, currentValue);
     }
 
-    ***
-    */
-   
-   /*
-   Estando com a lista separada groupBySellerIds
+    // Etapa de pagamento
+    let pagamentos = [];
 
-   function calculateOrderTotal(list) {
-     let total = 0;
-     list.forEach((item) => {
-       const result = item.quantity * item.unitPriceOrdered;
-       total = total + result;
-     });  
-     return total;
-   }
-ETAPA PARA O PAGAMENTO:
-   for (let seller of groupBySellerIds){
-     const list = seller[1];
-   //   console.log(list);
-   //   console.log(calculateOrderTotal(list));
-     console.log(`O vendedor id: ${seller[0]}, vai receber ${calculateOrderTotal(list)}`);
-   }
-    */
+    for (let seller of groupBySellerIds){
+      const sellerId = seller[0];
+      const orderItems = seller[1];
+      const totalValue = calculateOrderTotal(orderItems);
+
+      const accountSellerId = await this.accountService.getAccountId(sellerId);
+ 
+       const pagamento = await this.transferservice.execute({
+        toAccountId: accountSellerId.id,
+        value: totalValue,
+        accountPassword: password
+        }, userAccountId)
+      pagamentos.push(pagamento);
+    }
+   return {resultado: pagamentos};
   }
 }
