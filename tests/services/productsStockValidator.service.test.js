@@ -15,7 +15,7 @@ describe("ProductsStockValidatorService", () => {
   const productFromDb = {
     id: "prod-1",
     name: "Produto Teste",
-    unitPrice: 1000,
+    unitPrice: { equals: (val) => val === 1000 },
     stockQuantity: 10,
   };
 
@@ -129,7 +129,7 @@ describe("ProductsStockValidatorService", () => {
       expect(service.errors[0]).toMatchObject({
         success: false,
         code: "INSUFFICIENT_STOCK",
-        details: { requestedQuantity: 15, availableQuantity: 10 },
+        details: { quantity: 15, availableQuantity: 10 },
       });
     });
 
