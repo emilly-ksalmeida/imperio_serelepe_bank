@@ -23,7 +23,7 @@ export class ProductsStockValidatorService {
 
   async validateStockAndPrice(productData) {
     const product = await this.productsStockRepository.findOneById(
-      productData.id,
+      productData.productId,
     );
 
     if (!product) {
@@ -37,7 +37,7 @@ export class ProductsStockValidatorService {
       });
     }
 
-    if (productData.unitPriceOrdered !== product.unitPrice) {
+    if (!product.unitPrice.equals(productData.unitPriceOrdered)) {
       throw new ProductPriceChangedError();
     }
 
