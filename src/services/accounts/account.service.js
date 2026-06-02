@@ -9,6 +9,10 @@ class AccountService {
     return await this.accountRepository.findBalanceById(accountId);
   }
 
+  async getAccountId(userId){
+    return await this.accountRepository.findAccountByuserId(userId);
+  }
+
   async generateAccountStatement(userId) {
     try {
       const statements = await this.accountRepository.accountStatement(userId);

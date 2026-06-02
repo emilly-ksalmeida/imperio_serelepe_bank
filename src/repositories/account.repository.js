@@ -16,6 +16,19 @@ class AccountRepository {
     }
   }
 
+  async findAccountByuserId(userId) {
+    try {
+      return await this.repository.accounts.findUnique({
+        where: { idUser: userId },
+        select: {
+          id: true
+        }
+      });
+    } catch (error) {
+      this.#handleDatabaseError(error);
+    }
+  }
+
   async findBalanceById(accountId) {
     try {
       const account = await this.repository.accounts.findUnique({
