@@ -4,71 +4,67 @@ import { ProductPriceChangedError } from "../../errors/products/productPriceChan
 export class ProductsStockValidatorService {
   constructor(productsStockRepository = new ProductsStockRepository()) {
     this.productsStockRepository = productsStockRepository;
-
-    this.validProducts = [];
-    this.errors = [];
   }
 
   async execute(productsDataList) {
+    const validProducts = [];
+    const errors = [];
+
     for (let product of productsDataList) {
-      await this.validateStockAndPrice(product);
-    }
+      const validatedProduct = await this.productsStockRepository.findOneById(
+        product.productId,
+      );
 
-    const hasError = this.errors.length > 0;
+      if (!validatedProduct) {
+        errors.push({
+          success: false,
+          code: "PRODUCT_NOT_FOUND",
+          message: "Produto não encontrado",
+          details: {
+            id: validatedProduct.id,
+          },
+        });
+      }
 
-    if (hasError) return this.errors;
+      if (!validatedProduct.unitPrice.equals(product.unitPriceOrdered)) {
+        throw new ProductPriceChangedError();
+      }
 
-    return this.validProducts;
-  }
+      if (validatedProduct.stockQuantity < product.quantity) {
+        errors.push({
+          success: false,
+          code: "INSUFFICIENT_STOCK",
+          message: "Estoque insuficiente",
+          details: {
+            id: validatedProduct.id,
+            name: validatedProduct.name,
+            quantity: product.quantity,
+            availableQuantity: validatedProduct.stockQuantity,
+          },
+        });
+      }
 
-  async validateStockAndPrice(productData) {
-    const product = await this.productsStockRepository.findOneById(
-      productData.productId,
-    );
-
-    if (!product) {
-      return this.errors.push({
-        success: false,
-        code: "PRODUCT_NOT_FOUND",
-        message: "Produto não encontrado",
+      validProducts.push({
+        success: true,
+        code: "PRODUCT_AVAILABLE",
+        message: "Produto disponível em estoque",
         details: {
-          id: productData.id,
+          id: validatedProduct.id,
+          name: validatedProduct.name,
+          quantity: product.quantity,
+          availableQuantity: validatedProduct.stockQuantity,
+          unitPriceOrdered: product.unitPriceOrdered,
+          sellerId: validatedProduct.sellerId,
+          sellerAccountId: validatedProduct.seller.account.id,
         },
       });
     }
 
-    if (!product.unitPrice.equals(productData.unitPriceOrdered)) {
-      throw new ProductPriceChangedError();
-    }
+    const hasError = errors.length > 0;
 
-    if (productData.quantity > product.stockQuantity) {
-      return this.errors.push({
-        success: false,
-        code: "INSUFFICIENT_STOCK",
-        message: "Estoque insuficiente",
-        details: {
-          id: product.id,
-          name: product.name,
-          quantity: productData.quantity,
-          availableQuantity: product.stockQuantity,
-        },
-      });
-    }
+    if (hasError) return errors;
 
-    return this.validProducts.push({
-      success: true,
-      code: "PRODUCT_AVAILABLE",
-      message: "Produto disponível em estoque",
-      details: {
-        id: product.id,
-        name: product.name,
-        quantity: productData.quantity,
-        availableQuantity: product.stockQuantity,
-        unitPriceOrdered:productData.unitPriceOrdered,
-        sellerId: product.sellerId,
-        sellerAccountId: product.seller.account.id,
-      },
-    });
+    return validProducts;
   }
 }
 
