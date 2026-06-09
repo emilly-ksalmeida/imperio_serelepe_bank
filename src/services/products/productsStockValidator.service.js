@@ -21,9 +21,10 @@ export class ProductsStockValidatorService {
           code: "PRODUCT_NOT_FOUND",
           message: "Produto não encontrado",
           details: {
-            id: validatedProduct.id,
+            id: product.productId,
           },
         });
+        continue;
       }
 
       if (!validatedProduct.unitPrice.equals(product.unitPriceOrdered)) {
@@ -42,6 +43,7 @@ export class ProductsStockValidatorService {
             availableQuantity: validatedProduct.stockQuantity,
           },
         });
+        continue;
       }
 
       validProducts.push({
