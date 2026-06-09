@@ -25,9 +25,7 @@ export class PurchaseTransferService {
       Number.parseFloat(fromAccount.balance) - Number.parseFloat(value);
 
     if (newFromBalance < 0) {
-      throw new BusinessError(
-        `Não existe saldo suficiente para enviar $e ${value}`,
-      );
+      throw new BusinessError("Não existe saldo suficiente para realizar o pagamento da compra");
     }
 
     const toAccount = await this.accountRepository.findAccountById(

@@ -23,7 +23,7 @@ export default class Balance {
 
     if (remainingBalance < 0) {
       throw new Error(
-        `Não existe saldo suficiente para mandar o valor $${valueForDebit}`,
+        `Não existe saldo suficiente para mandar o valor $e ${valueForDebit}`,
       );
     } else {
       return remainingBalance;
