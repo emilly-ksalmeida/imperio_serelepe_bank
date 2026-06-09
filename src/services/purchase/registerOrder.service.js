@@ -4,23 +4,6 @@ import ProductsStockRepository from "../../repositories/productsStock.repository
 import calculateOrderTotal from "../../utils/calculateOrderTotal.js";
 import { PurchaseTransferService } from "./purchaseTransfer.service.js";
 
-/*
-  order é um array de :
-{
-   success: true,
-    code: 'PRODUCT_AVAILABLE',
-    message: 'Produto disponível em estoque',
-    details: {
-      id: 49,
-      name: 'Paçoca',
-      quantity: 1,
-      availableQuantity: 100,
-      unitPriceOrdered: 500,
-      sellerId: '235b4126-5868-414a-acb7-cd50f428cf99',
-      sellerAccountId: product.seller.account.id,
-    }
-}
-*/
 export class RegisterOrderService {
   constructor(
     productsStockRepository = new ProductsStockRepository(),
