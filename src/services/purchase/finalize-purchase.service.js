@@ -16,6 +16,7 @@ export default class FinalizePurchaseService {
     }
 
     const userData = {
+      userId: payload.userId,
       userAccountId: payload.userAccountId,
       password: payload.password
     }
