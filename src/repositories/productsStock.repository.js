@@ -7,7 +7,7 @@ class ProductsStockRepository {
   }
   async findOneById(productId) {
     try {
-      return this.repository.products.findUnique({
+      return await this.repository.products.findUnique({
         where: { id: productId },
         select: {
           id: true,
@@ -25,24 +25,25 @@ class ProductsStockRepository {
         },
       });
     } catch (error) {
-      this.#handleDatabaseError(error);
+      return this.#handleDatabaseError(error);
     }
   }
 
-  async updateQuantityById(productId, updatedQuantity, tx) {
+  async updateQuantityById(productId, quantity, updatedQuantity, tx) {
     try {
       const client = tx ?? this.repository;
-      return client.products.update({
-        where: { id: productId },
+
+      return await client.products.update({
+        where: { id: productId, stockQuantity: { gte: quantity } },
         data: {
-          stockQuantity: updatedQuantity,
+          stockQuantity: { decrement: quantity },
         },
         select: {
           id: true,
         },
       });
     } catch (error) {
-      this.#handleDatabaseError(error);
+      return this.#handleDatabaseError(error);
     }
   }
 
