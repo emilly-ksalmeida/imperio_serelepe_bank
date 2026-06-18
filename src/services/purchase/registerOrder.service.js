@@ -1,22 +1,26 @@
 import { prisma } from "../../model/db.js";
+import { PurchaseTransferService } from "./purchaseTransfer.service.js";
+import OrdersAndOrderItemsRepository from "../../repositories/ordersAndOrderItems.repository.js";
 import { InsufficientProductStockError } from "../../errors/products/insufficientProductStockError.error.js";
 import ProductsStockRepository from "../../repositories/productsStock.repository.js";
 import calculateOrderTotal from "../../utils/calculateOrderTotal.js";
-import { PurchaseTransferService } from "./purchaseTransfer.service.js";
 
 export class RegisterOrderService {
   constructor(
     productsStockRepository = new ProductsStockRepository(),
     purchaseTransferService = new PurchaseTransferService(),
+    ordersAndOrderItemsRepository = new OrdersAndOrderItemsRepository(),
   ) {
     this.productsStockRepository = productsStockRepository;
     this.purchaseTransferService = purchaseTransferService;
+    this.ordersAndOrderItemsRepository = ordersAndOrderItemsRepository;
   }
 
   async execute(order, userData) {
-    const { userAccountId } = userData;
+    const { userAccountId, userId } = userData;
 
     return await prisma.$transaction(async (tx) => {
+     
       for (const item of order) {
         const remainingStock =
           item.details.availableQuantity - item.details.quantity;
@@ -29,11 +33,12 @@ export class RegisterOrderService {
 
         await this.productsStockRepository.updateQuantityById(
           item.details.id,
+          item.details.quantity,
           remainingStock,
           tx,
         );
       }
-
+      
       const groupBySellerIds = new Map();
 
       for (const item of order) {
@@ -45,8 +50,9 @@ export class RegisterOrderService {
 
         groupBySellerIds.get(sellerId).push(item.details);
       }
-
+      
       const completedPayments = [];
+      const completedRegisters = [];
 
       for (const seller of groupBySellerIds) {
         const orderItems = seller[1];
@@ -60,9 +66,22 @@ export class RegisterOrderService {
           totalValue,
         );
         completedPayments.push(payment);
+
+        const registeredOrder =
+          await this.ordersAndOrderItemsRepository.createOrderWithItems(
+            tx,
+            userId,
+            totalValue,
+            orderItems,
+          );
+
+        completedRegisters.push(registeredOrder);
       }
 
-      return { result: completedPayments };
+      return {
+        payment: completedPayments,
+        register: completedRegisters,
+      };
     });
   }
 }
