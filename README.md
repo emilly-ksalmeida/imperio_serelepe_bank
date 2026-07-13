@@ -1,6 +1,6 @@
-# Imperio Serelepe Bank
+# SerelepePay – Império Serelepe Bank API
 
-API bancária para gerenciamento de contas, transferências e operações financeiras.
+SerelepePay é uma plataforma web que digitaliza uma economia escolar utilizando a moeda digital Serelepe ($e). Este repositório contém o back-end da aplicação, uma API bancária responsável pelo gerenciamento de contas, carteiras, transferências, pagamentos e demais operações financeiras.
 
 ## Tech Stack
 
