@@ -68,6 +68,7 @@ const routes = (app) => {
   // Adicionar delete app.delete("/")
 
   //  Market routes - orders
+  app.get("/orders", verifyToken, (req, res) => ordersController.listOrder(req, res));
   app.post("/orders/finalize", verifyToken, (req, res) => ordersController.finalizeOrder(req, res));
 
   app.get("/debug-sentry", (_req, _res) => {
