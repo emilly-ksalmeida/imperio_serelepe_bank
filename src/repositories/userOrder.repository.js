@@ -14,7 +14,42 @@ export class UserOrdersRepository {
           id: true,
           status: true,
           totalAmount: true,
-          orderItems: true,
+          orderItems: {
+            select: {
+              id: true,
+              productNameOrdered: true,
+              unitPriceOrdered: true,
+              quantity: true,
+            }
+          }
+        },
+      });
+    } catch (error) {
+      return this.#handleDatabaseError(error);
+    }
+  }
+
+  async getOrderById(orderId) {
+     try {
+      return await this.repository.orders.findUnique({
+        where: { id: orderId },
+        select: {
+          id: true,
+          status: true,
+          totalAmount: true,
+          orderItems: {
+            select: {
+              id: true,
+              productNameOrdered: true,
+              unitPriceOrdered: true,
+              quantity: true,
+            }
+          },
+          buyer: {
+            select: {
+              name: true,
+            }
+          }
         },
       });
     } catch (error) {

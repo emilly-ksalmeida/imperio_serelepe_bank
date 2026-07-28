@@ -33,6 +33,14 @@ class OrdersController {
 
     res.status(200).json(result);
   }
+
+  async getOrder(req, res) {
+    const { orderId } = req.params;
+
+    const result = await this.userOrderSevice.getOrderById(orderId);
+
+    res.status(200).json(result);
+  }
 }
 
 export default OrdersController;

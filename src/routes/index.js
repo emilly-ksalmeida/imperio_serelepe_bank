@@ -69,6 +69,7 @@ const routes = (app) => {
 
   //  Market routes - orders
   app.get("/orders", verifyToken, (req, res) => ordersController.listOrder(req, res));
+  app.get("/orders-find/:orderId", verifyToken, verifyRole, (req, res) => ordersController.getOrder(req, res));
   app.post("/orders/finalize", verifyToken, (req, res) => ordersController.finalizeOrder(req, res));
 
   app.get("/debug-sentry", (_req, _res) => {

@@ -7,4 +7,8 @@ export class UserOrdersService {
   async list(userId, status) {
     return await this.userOrderRepository.findAllOrders(userId, status);
   }
+
+   async getOrderById(orderId) {
+    return await this.userOrderRepository.getOrderById(orderId);
+  }
 }
