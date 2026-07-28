@@ -33,7 +33,7 @@ export class ManageOrdersRepository {
   async getOrderById(orderId) {
      try {
       return await this.repository.orders.findUnique({
-        where: { id: orderId },
+        where: { id: orderId, status: Status.paid },
         select: {
           id: true,
           status: true,
@@ -65,6 +65,9 @@ export class ManageOrdersRepository {
         data: {
           status: Status.delivered
         },
+        select: {
+          status: true
+        }
       });
     } catch (error) {
       return this.#handleDatabaseError(error);
@@ -78,6 +81,9 @@ export class ManageOrdersRepository {
         data: {
           status: Status.cancelled
         },
+        select: {
+          status: true
+        }
       });
     } catch (error) {
       return this.#handleDatabaseError(error);
