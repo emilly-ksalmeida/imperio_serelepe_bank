@@ -68,9 +68,24 @@ const routes = (app) => {
   // Adicionar delete app.delete("/")
 
   //  Market routes - orders
-  app.get("/orders", verifyToken, (req, res) => ordersController.listOrder(req, res));
-  app.get("/orders-find/:orderId", verifyToken, verifyRole, (req, res) => ordersController.getOrder(req, res));
-  app.post("/orders/finalize", verifyToken, (req, res) => ordersController.finalizeOrder(req, res));
+  app.get("/orders", verifyToken, (req, res) =>
+    ordersController.listOrder(req, res),
+  );
+  app.get("/orders-find/:orderId", verifyToken, verifyRole, (req, res) =>
+    ordersController.getOrder(req, res),
+  );
+
+  app.post("/orders/finalize", verifyToken, (req, res) =>
+    ordersController.finalizeOrder(req, res),
+  );
+
+  app.patch("/orders/:orderId/delivered", verifyToken, verifyRole, (req, res) =>
+    ordersController.markAsDelivered(req, res),
+  );
+
+  app.patch("/orders/:orderId/cancelled", verifyToken, (req, res) =>
+    ordersController.markAsCancelled(req, res),
+  );
 
   app.get("/debug-sentry", (_req, _res) => {
     throw new Error("Sentry funcionando");

@@ -1,7 +1,8 @@
 import { NotFoundError } from "../errors/products/notFoundError.error.js";
+import { Status } from "../generated/prisma/index.js";
 import { prisma, prismaImport } from "../model/db.js";
 
-export class UserOrdersRepository {
+export class ManageOrdersRepository {
   constructor(repository = prisma) {
     this.repository = repository;
   }
@@ -50,6 +51,32 @@ export class UserOrdersRepository {
               name: true,
             }
           }
+        },
+      });
+    } catch (error) {
+      return this.#handleDatabaseError(error);
+    }
+  }
+
+  async markAsDelivered(orderId){
+    try{
+      return this.repository.orders.update({
+        where: { id: orderId },
+        data: {
+          status: Status.delivered
+        },
+      });
+    } catch (error) {
+      return this.#handleDatabaseError(error);
+    }
+  }
+
+  async markAsCancelled(orderId){
+    try{
+      return this.repository.orders.update({
+        where: { id: orderId },
+        data: {
+          status: Status.cancelled
         },
       });
     } catch (error) {

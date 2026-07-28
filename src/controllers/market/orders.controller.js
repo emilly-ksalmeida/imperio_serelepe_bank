@@ -1,13 +1,13 @@
 import FinalizePurchaseService from "../../services/purchase/finalize-purchase.service.js";
-import { UserOrdersService } from "../../services/purchase/userOrders.service.js";
+import { ManageOrdersService } from "../../services/purchase/manageOrders.service.js";
 
 class OrdersController {
   constructor(
     finalizePurchaseService = new FinalizePurchaseService(),
-    userOrderSevice = new UserOrdersService(),
+    manageOrdersService = new ManageOrdersService(),
   ) {
     this.finalizePurchaseService = finalizePurchaseService;
-    this.userOrderSevice = userOrderSevice;
+    this.manageOrdersService = manageOrdersService;
   }
 
   async finalizeOrder(req, res) {
@@ -29,7 +29,7 @@ class OrdersController {
     const { id } = req.dataCurrentUser;
     const { status } = req.query;
 
-    const result = await this.userOrderSevice.list(id, status);
+    const result = await this.manageOrdersService.list(id, status);
 
     res.status(200).json(result);
   }
@@ -37,10 +37,27 @@ class OrdersController {
   async getOrder(req, res) {
     const { orderId } = req.params;
 
-    const result = await this.userOrderSevice.getOrderById(orderId);
+    const result = await this.manageOrdersService.getOrderById(orderId);
 
     res.status(200).json(result);
   }
+
+  async markAsDelivered(req, res) {
+    const { orderId } = req.params;
+
+    const result = await this.manageOrdersService.markAsDelivered(orderId);
+
+    res.status(200).json(result);
+  }
+  
+   async markAsCancelled(req, res) {
+    const { orderId } = req.params;
+
+    const result = await this.manageOrdersService.markAsCancelled(orderId);
+
+    res.status(200).json(result);
+  }
+
 }
 
 export default OrdersController;
