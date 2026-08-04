@@ -65,13 +65,12 @@ const routes = (app) => {
   app.put("/products/seller/:productId", verifyToken, verifyRole, (req, res) =>
     productsController.updateProduct(req, res),
   );
-  // Adicionar delete app.delete("/")
-
+ 
   //  Market routes - orders
   app.get("/orders", verifyToken, (req, res) =>
-    ordersController.listOrder(req, res),
+    ordersController.listOrders(req, res),
   );
-  app.get("/orders-find/:orderId", verifyToken, verifyRole, (req, res) =>
+  app.get("/orders/:orderId", verifyToken, verifyRole, (req, res) =>
     ordersController.getOrder(req, res),
   );
 
@@ -79,11 +78,11 @@ const routes = (app) => {
     ordersController.finalizeOrder(req, res),
   );
 
-  app.patch("/orders/:orderId/delivered", verifyToken, verifyRole, (req, res) =>
+  app.patch("/orders/delivered/:orderId", verifyToken, verifyRole, (req, res) =>
     ordersController.markAsDelivered(req, res),
   );
 
-  app.patch("/orders/:orderId/cancelled", verifyToken, (req, res) =>
+  app.patch("/orders/cancelled/:orderId", verifyToken, (req, res) =>
     ordersController.markAsCancelled(req, res),
   );
 

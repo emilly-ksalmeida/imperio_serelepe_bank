@@ -25,7 +25,7 @@ class OrdersController {
       .json({ message: "Compra realizada com sucesso!", details: result });
   }
 
-  async listOrder(req, res) {
+  async listOrders(req, res) {
     const { id } = req.dataCurrentUser;
     const { status } = req.query;
 
