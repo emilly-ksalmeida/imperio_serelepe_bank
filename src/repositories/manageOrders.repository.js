@@ -10,7 +10,9 @@ export class ManageOrdersRepository {
   async findAllOrders(userId, status) {
     try {
       return await this.repository.orders.findMany({
+        take: 10,
         where: { buyerId: userId, status},
+        orderBy: [{ createdAt: "desc" }],
         select: {
           id: true,
           status: true,
