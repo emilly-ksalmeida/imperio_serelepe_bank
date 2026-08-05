@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const createUserSchema = z.object({
+export const createUserSchema = z.strictObject({
   name: z
     .string()
     .min(2, "Nome deve ter no mínimo 2 caracteres.")
@@ -44,7 +44,7 @@ export const createUserSchema = z.object({
     .nonempty("A resposta secreta é obrigatória."),
 });
 
-export const loginSchema = z.object({
+export const loginSchema = z.strictObject({
   username: z
     .string()
     .min(3, "Dados inválidos.")
@@ -59,7 +59,7 @@ export const loginSchema = z.object({
     .regex(/^[0-9]+$/, "Dados inválidos."),
 });
 
-export const transferSchema = z.object({
+export const transferSchema = z.strictObject({
   toAccountId: z
     .string()
     .length(4, "Código da conta inválido.")
@@ -91,7 +91,7 @@ export const getSecurityQuestionSchema = z
   .nonempty("Nome de Usuário é obrigatório.")
   .regex(/^[a-zA-Z0-9._]+$/, "Dados inválidos.");
 
-export const resetUserSchema = z.object({
+export const resetUserSchema = z.strictObject({
   currentUsername: z
     .string()
     .min(3)
