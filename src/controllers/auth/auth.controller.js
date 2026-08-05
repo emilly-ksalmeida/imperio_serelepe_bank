@@ -4,6 +4,7 @@ import {
   resetUserSchema,
 } from "../../model/validateSchema.js";
 import AuthService from "../../services/auth/auth.service.js";
+import { ValidationError } from "../../errors/products/validationError.error.js";
 
 export default class AuthController {
   constructor(authService = new AuthService()) {
@@ -19,7 +20,7 @@ export default class AuthController {
     if (!validatedcurrentUsername.success) {
       const pretty = z.prettifyError(validatedcurrentUsername.error);
 
-      throw new Error(pretty);
+      throw new ValidationError(pretty);
     }
 
     const question =
@@ -36,7 +37,7 @@ export default class AuthController {
     if (!validatedResetData.success) {
       const pretty = z.prettifyError(validatedResetData.error);
 
-      throw new Error(pretty);
+      throw new ValidationError(pretty);
     }
 
     const result = await this.authService.execute(resetData);
