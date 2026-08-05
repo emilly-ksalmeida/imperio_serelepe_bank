@@ -42,6 +42,6 @@ export default class AuthController {
 
     const result = await this.authService.execute(resetData);
 
-    res.status(200).json(result);
+    res.status(201).json(result);
   }
 }
