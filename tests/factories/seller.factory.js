@@ -29,9 +29,3 @@ export async function createUserSeller(prisma, overrides = {}) {
     include: { account: true, product: true },
   });
 }
-
-export async function createProducts (prisma, productData) {
-  return await prisma.products.create({
-    data: productData
-  });
-}
