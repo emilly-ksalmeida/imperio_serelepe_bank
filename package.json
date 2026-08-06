@@ -9,7 +9,8 @@
     "start": "nodemon server.js",
     "test:watch": "NODE_OPTIONS=--experimental-vm-modules dotenv -e .env.test -- jest --watch",
     "test": "NODE_OPTIONS=--experimental-vm-modules dotenv -e .env.test -- jest",
-    "test:unit": "NODE_OPTIONS=--experimental-vm-modules jest --config jest.unit.config.js"
+    "test:unit": "NODE_OPTIONS=--experimental-vm-modules jest --config jest.unit.config.js",
+    "db:test:reset": "dotenv -e .env.test prisma migrate reset --force"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
