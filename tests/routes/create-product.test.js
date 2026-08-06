@@ -42,6 +42,7 @@ describe("POST /products", () => {
             name: true,
             description: true,
             stockQuantity: true,
+            unitPrice: true,
           },
         });
 
