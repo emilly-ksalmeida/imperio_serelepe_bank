@@ -1,7 +1,7 @@
 import request from "supertest";
 import express from "express";
 import routes from "../../src/routes/index.js";
-import { prisma } from "../setup/prisma-cleaner.js";
+import { prisma } from "../setup/prisma.js";
 import { createUserWithAccount } from "../factories/user.factory.js";
 
 describe("GET /user-recovery", () => {

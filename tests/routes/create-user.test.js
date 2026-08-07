@@ -2,7 +2,7 @@ import request from "supertest"
 import express from "express"
 import routes from "../../src/routes/index.js"
 import { faker } from "@faker-js/faker"
-import { prisma } from "../setup/prisma-cleaner.js"
+import { prisma } from "../setup/prisma.js"
 
 describe("POST /create-user", () => {
   describe("when user try to register", () => {
