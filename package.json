@@ -8,7 +8,10 @@
     "db:test:push": "dotenv -e .env.test prisma db push",
     "start": "nodemon server.js",
     "test:watch": "NODE_OPTIONS=--experimental-vm-modules dotenv -e .env.test -- jest --watch",
-    "test": "NODE_OPTIONS=--experimental-vm-modules dotenv -e .env.test -- jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules dotenv -e .env.test -- jest",
+    "test:integration": "NODE_OPTIONS=--experimental-vm-modules dotenv -e .env.test -- jest --runInBand",
+    "test:unit": "NODE_OPTIONS=--experimental-vm-modules jest --config jest.unit.config.js",
+    "db:test:reset": "dotenv -e .env.test prisma migrate reset --force"
   },
   "prisma": {
     "seed": "node prisma/seed.js"

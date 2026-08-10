@@ -1,7 +1,7 @@
 import request from "supertest"
 import express from "express"
 import routes from "../../src/routes/index.js"
-import { prisma } from "../setup/prisma-cleaner.js"
+import { prisma } from "../setup/prisma.js"
 import { generateJWT } from "../helper/auth-helper.js"
 import { createUser, createUserWithAccount } from "../factories/user.factory.js"
 

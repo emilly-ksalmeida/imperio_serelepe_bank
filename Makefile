@@ -18,9 +18,20 @@ db-test-reset:
 db-test-setup: db-test-create db-test-reset
 	@echo "Test database ready."
 
-test:
+test-integration:
 	@echo "Running tests..."
-	@npm run test
+	@npm run test:integration
+
+test-unit:
+	@echo "Running unit tests..."
+	@npm run test:unit
+
+test:
+	@echo "Running unit tests..."
+	-@npm run test:unit
+
+	@echo "Running integration tests..."
+	-@npm run test:integration
 
 test-watch:
 	@echo "Running tests in watch mode..."

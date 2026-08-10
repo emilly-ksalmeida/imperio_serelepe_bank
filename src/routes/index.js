@@ -7,11 +7,10 @@ import SessionsController from "../controllers/auth/sessions.controller.js";
 import UsersController from "../controllers/users/users.controller.js";
 import TransactionsController from "../controllers/bank/transactions.controller.js";
 import AccountBalanceController from "../controllers/bank/account-balance.controller.js";
-import SecurityQuestionController from "../controllers/auth/security-question.controller.js";
-import PasswordResetController from "../controllers/auth/password-reset.controller.js";
 import ProductsController from "../controllers/market/products.controller.js";
-// import OrdersController from "../controllers/market/orders.controller.js";
+import OrdersController from "../controllers/market/orders.controller.js";
 import errorHandler from "../errors/errorHandler.js";
+import AuthController from "../controllers/auth/auth.controller.js";
 
 const routes = (app) => {
   app.use(express.urlencoded({ extended: true }));
@@ -21,22 +20,19 @@ const routes = (app) => {
   const usersController = new UsersController();
   const transactionsController = new TransactionsController();
   const accountBalanceController = new AccountBalanceController();
-  const securityQuestionController = new SecurityQuestionController();
-  const passwordResetController = new PasswordResetController();
+  const authController = new AuthController();
   const productsController = new ProductsController();
-  // const ordersController = new OrdersController();
+  const ordersController = new OrdersController();
 
   // Auth routes
   app.post("/login", (req, res) => sessionsController.loginUser(req, res));
+
   app.get("/user-recovery/:currentUsername", (req, res) =>
-    securityQuestionController.getUserSecurityQuestion(req, res),
+    authController.getUserSecurityQuestion(req, res),
   );
-  app.post("/validate-secret-answer", (req, res) =>
-    securityQuestionController.validateSecretAnswer(req, res),
-  );
-  app.patch("/reset-password", (req, res) =>
-    passwordResetController.userResetPassword(req, res),
-  );
+
+  app.post("/reset-password", (req, res) =>
+    authController.resetPassword(req, res));
 
   // User routes
   app.post("/create-user", (req, res) => usersController.createUser(req, res));
@@ -65,10 +61,26 @@ const routes = (app) => {
   app.put("/products/seller/:productId", verifyToken, verifyRole, (req, res) =>
     productsController.updateProduct(req, res),
   );
-  // Adicionar delete app.delete("/")
-
+ 
   //  Market routes - orders
-  // app.post("/orders/finalize", verifyToken, (req, res) => ordersController.finalizeOrder(req, res));
+  app.get("/orders", verifyToken, (req, res) =>
+    ordersController.listOrders(req, res),
+  );
+  app.get("/orders/:orderId", verifyToken, verifyRole, (req, res) =>
+    ordersController.getOrder(req, res),
+  );
+
+  app.post("/orders/finalize", verifyToken, (req, res) =>
+    ordersController.finalizeOrder(req, res),
+  );
+
+  app.patch("/orders/delivered/:orderId", verifyToken, verifyRole, (req, res) =>
+    ordersController.markAsDelivered(req, res),
+  );
+
+  app.patch("/orders/cancelled/:orderId", verifyToken, (req, res) =>
+    ordersController.markAsCancelled(req, res),
+  );
 
   app.get("/debug-sentry", (_req, _res) => {
     throw new Error("Sentry funcionando");

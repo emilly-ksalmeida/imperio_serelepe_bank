@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const createUserSchema = z.object({
+export const createUserSchema = z.strictObject({
   name: z
     .string()
     .min(2, "Nome deve ter no mínimo 2 caracteres.")
@@ -44,7 +44,7 @@ export const createUserSchema = z.object({
     .nonempty("A resposta secreta é obrigatória."),
 });
 
-export const loginSchema = z.object({
+export const loginSchema = z.strictObject({
   username: z
     .string()
     .min(3, "Dados inválidos.")
@@ -59,7 +59,7 @@ export const loginSchema = z.object({
     .regex(/^[0-9]+$/, "Dados inválidos."),
 });
 
-export const transferSchema = z.object({
+export const transferSchema = z.strictObject({
   toAccountId: z
     .string()
     .length(4, "Código da conta inválido.")
@@ -84,13 +84,24 @@ export const transferSchema = z.object({
     .regex(/^[0-9]+$/, "Senha da conta inválida."),
 });
 
-export const resetUserSchema = z.object({
+export const getSecurityQuestionSchema = z
+  .string()
+  .min(3)
+  .max(20)
+  .nonempty("Nome de Usuário é obrigatório.")
+  .regex(/^[a-zA-Z0-9._]+$/, "Dados inválidos.");
+
+export const resetUserSchema = z.strictObject({
   currentUsername: z
     .string()
     .min(3)
     .max(20)
     .nonempty("Nome de Usuário é obrigatório.")
     .regex(/^[a-zA-Z0-9._]+$/, "Dados inválidos."),
+  answer: z
+    .string()
+    .max(100, "Quantidade máxima de caracteres  é 100.")
+    .nonempty("A resposta secreta é obrigatória."),
   newPassword: z
     .string()
     .min(4, "A senha deve ter no mínimo 4 dígitos.")
@@ -105,48 +116,49 @@ export const resetUserSchema = z.object({
 });
 
 export const createProductSchema = z.strictObject({
-  name: z.string().refine(
+  name: z
+    .string()
+    .refine(
       (name) => name.trim().length > 0,
       "Nome não pode conter apenas espaços.",
-    ).nonempty("Nome do produto é obrigatório."),
+    )
+    .nonempty("Nome do produto é obrigatório."),
   description: z
     .string()
     .min(10, "A descrição do produto deve ter no mínimo 10 caracteres.")
     .max(200, "A descrição do produto deve ter no máximo 200 caracteres.")
     .nonempty("Descrição do produto é obrigatória."),
   unitPrice: z
-  .number().gt(1, "O valor mínimo para produtos é 1.00")
-  .refine(
-    (value) => /^\d+(\.00|\.0|\.\d{2})?$/.test(value.toString()),
-    "O valor precisa ser numérico com duas casas decimais."
-  ),
-  stockQuantity: z
-  .number().gte(0, "O valor mínimo é zero")
-  .int()
-  .nonnegative(),
+    .number()
+    .gt(1, "O valor mínimo para produtos é 1.00")
+    .refine(
+      (value) => /^\d+(\.00|\.0|\.\d{2})?$/.test(value.toString()),
+      "O valor precisa ser numérico com duas casas decimais.",
+    ),
+  stockQuantity: z.number().gte(0, "O valor mínimo é zero").int().nonnegative(),
   imgUrl: z.string().max(200).optional(),
 });
 
 export const updateProductSchema = z.strictObject({
-  name: z.string().refine(
+  name: z
+    .string()
+    .refine(
       (name) => name.trim().length > 0,
       "Nome não pode conter apenas espaços.",
-    ).nonempty("Nome do produto é obrigatório."),
+    )
+    .nonempty("Nome do produto é obrigatório."),
   description: z
     .string()
     .min(10, "A descrição do produto deve ter no mínimo 10 caracteres.")
     .max(200, "A descrição do produto deve ter no máximo 200 caracteres.")
     .nonempty("Descrição do produto é obrigatória."),
   unitPrice: z
-  .number().gt(1, "O valor mínimo para produtos é 1.00")
-  .refine(
-    (value) => /^\d+(\.00|\.0|\.\d{2})?$/.test(value.toString()),
-    "O valor precisa ser numérico com duas casas decimais."
-  ),
-  stockQuantity: z
-  .number().gte(0, "O valor mínimo é zero")
-  .int()
-  .nonnegative(),
+    .number()
+    .gt(1, "O valor mínimo para produtos é 1.00")
+    .refine(
+      (value) => /^\d+(\.00|\.0|\.\d{2})?$/.test(value.toString()),
+      "O valor precisa ser numérico com duas casas decimais.",
+    ),
+  stockQuantity: z.number().gte(0, "O valor mínimo é zero").int().nonnegative(),
   imgUrl: z.string().max(200).optional(),
 });
-
