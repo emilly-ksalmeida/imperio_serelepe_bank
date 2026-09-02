@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+// bank
 export const createUserSchema = z.strictObject({
   name: z
     .string()
@@ -115,6 +116,7 @@ export const resetUserSchema = z.strictObject({
     .regex(/^[0-9]+$/, "A senha deve conter apenas números."),
 });
 
+// market
 export const createProductSchema = z.strictObject({
   name: z
     .string()
@@ -161,4 +163,32 @@ export const updateProductSchema = z.strictObject({
     ),
   stockQuantity: z.number().gte(0, "O valor mínimo é zero").int().nonnegative(),
   imgUrl: z.string().max(200).optional(),
+});
+
+export const purchaseItemSchema = z.strictObject({
+  productId: z.number().int().positive(),
+  productNameOrdered: z
+    .string()
+    .refine(
+      (name) => name.trim().length > 0,
+      "Nome não pode conter apenas espaços.",
+    )
+    .nonempty("Nome do produto é obrigatório."),
+  quantity: z.number().int().positive(),
+  unitPriceOrdered: z
+    .number()
+    .gt(1, "O valor mínimo para produtos é 1.00")
+    .refine(
+      (value) => /^\d+(\.00|\.0|\.\d{2})?$/.test(value.toString()),
+      "O valor precisa ser numérico com duas casas decimais.",
+    ),
+});
+
+export const purchaseDataSchema = z.strictObject({
+  purchase: z.array(purchaseItemSchema).min(1),
+  password: z
+    .string()
+    .length(4, "Senha da conta inválida.")
+    .nonempty("A senha de conta é obrigatória.")
+    .regex(/^[0-9]+$/, "Senha da conta inválida."),
 });
