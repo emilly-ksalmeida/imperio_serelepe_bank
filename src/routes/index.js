@@ -2,6 +2,7 @@ import * as Sentry from "@sentry/node";
 import express from "express";
 import verifyToken from "../middleware/verifyToken.js";
 import verifyRole from "../middleware/verifyRole.js";
+import verifyRoleAdmin from "../middleware/verifyRoleAdmin.js";
 
 import SessionsController from "../controllers/auth/sessions.controller.js";
 import UsersController from "../controllers/users/users.controller.js";
@@ -9,8 +10,10 @@ import TransactionsController from "../controllers/bank/transactions.controller.
 import AccountBalanceController from "../controllers/bank/account-balance.controller.js";
 import ProductsController from "../controllers/market/products.controller.js";
 import OrdersController from "../controllers/market/orders.controller.js";
-import errorHandler from "../errors/errorHandler.js";
 import AuthController from "../controllers/auth/auth.controller.js";
+import AdminController from "../controllers/admin/admin.controller.js";
+
+import errorHandler from "../errors/errorHandler.js";
 
 const routes = (app) => {
   app.use(express.urlencoded({ extended: true }));
@@ -23,6 +26,7 @@ const routes = (app) => {
   const authController = new AuthController();
   const productsController = new ProductsController();
   const ordersController = new OrdersController();
+  const adminController = new AdminController();
 
   // Auth routes
   app.post("/login", (req, res) => sessionsController.loginUser(req, res));
@@ -32,7 +36,8 @@ const routes = (app) => {
   );
 
   app.post("/reset-password", (req, res) =>
-    authController.resetPassword(req, res));
+    authController.resetPassword(req, res),
+  );
 
   // User routes
   app.post("/create-user", (req, res) => usersController.createUser(req, res));
@@ -61,7 +66,7 @@ const routes = (app) => {
   app.put("/products/seller/:productId", verifyToken, verifyRole, (req, res) =>
     productsController.updateProduct(req, res),
   );
- 
+
   //  Market routes - orders
   app.get("/orders", verifyToken, (req, res) =>
     ordersController.listOrders(req, res),
@@ -82,6 +87,10 @@ const routes = (app) => {
     ordersController.markAsCancelled(req, res),
   );
 
+  // Admin
+  app.get("/admin", verifyToken, verifyRoleAdmin, (req, res) => adminController.getAllUsers(req, res));
+
+  // Observability
   app.get("/debug-sentry", (_req, _res) => {
     throw new Error("Sentry funcionando");
   });
