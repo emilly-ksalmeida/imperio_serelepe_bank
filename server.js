@@ -16,9 +16,17 @@ import routes from "./src/routes/index.js";
 
 const app = express();
 
+const origensPermitidas = (process.env.ORIGIN || "")
+  .split(",")
+  .map((origem) => origem.trim())
+  .filter(Boolean);
+
 app.use(
   cors({
-    origin: process.env.ORIGIN,
+    origin: (origem, callback) => {
+      const permitida = Boolean(origem) && origensPermitidas.includes(origem);
+      callback(null, permitida);
+    },
     methods: ["GET", "POST", "PATCH", "PUT"],
     credentials: true,
   })
