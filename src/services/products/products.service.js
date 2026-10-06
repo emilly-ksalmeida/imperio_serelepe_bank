@@ -40,6 +40,18 @@ export class ProductsService {
       return product;
   }
 
+  async updateProductById(productId, updateData) {
+    const { name, description, unitPrice, stockQuantity } = updateData;
+    const isActive = stockQuantity > 0 ? true : false;
+    const productIdParsed = parseInt(productId);
+
+    const product = await this.productRepository.updateById(
+      productIdParsed,
+      { name, description, unitPrice, stockQuantity, isActive },
+    );
+    return product;
+  }
+
   async deleteProduct(productId, currentUserId) {
     const productIdParsed = parseInt(productId);
 

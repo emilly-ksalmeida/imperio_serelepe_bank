@@ -9,8 +9,10 @@ import TransactionsController from "../controllers/bank/transactions.controller.
 import AccountBalanceController from "../controllers/bank/account-balance.controller.js";
 import ProductsController from "../controllers/market/products.controller.js";
 import OrdersController from "../controllers/market/orders.controller.js";
-import errorHandler from "../errors/errorHandler.js";
 import AuthController from "../controllers/auth/auth.controller.js";
+import AdminController from "../controllers/admin/admin.controller.js";
+
+import errorHandler from "../errors/errorHandler.js";
 
 const routes = (app) => {
   app.use(express.urlencoded({ extended: true }));
@@ -23,6 +25,7 @@ const routes = (app) => {
   const authController = new AuthController();
   const productsController = new ProductsController();
   const ordersController = new OrdersController();
+  const adminController = new AdminController();
 
   // Auth routes
   app.post("/login", (req, res) => sessionsController.loginUser(req, res));
@@ -32,7 +35,8 @@ const routes = (app) => {
   );
 
   app.post("/reset-password", (req, res) =>
-    authController.resetPassword(req, res));
+    authController.resetPassword(req, res),
+  );
 
   // User routes
   app.post("/create-user", (req, res) => usersController.createUser(req, res));
@@ -52,36 +56,83 @@ const routes = (app) => {
   app.get("/products", verifyToken, (req, res) =>
     productsController.getProducts(req, res),
   );
-  app.post("/products", verifyToken, verifyRole, (req, res) =>
+  app.post("/products", verifyToken, verifyRole(["seller"]), (req, res) =>
     productsController.createProduct(req, res),
   );
-  app.get("/products/seller", verifyToken, verifyRole, (req, res) =>
-    productsController.getSellerProducts(req, res),
+  app.get(
+    "/products/seller",
+    verifyToken,
+    verifyRole(["seller"]),
+    (req, res) => productsController.getSellerProducts(req, res),
   );
-  app.put("/products/seller/:productId", verifyToken, verifyRole, (req, res) =>
-    productsController.updateProduct(req, res),
+  app.put(
+    "/products/seller/:productId",
+    verifyToken,
+    verifyRole(["seller"]),
+    (req, res) => productsController.updateProduct(req, res),
   );
- 
+
   //  Market routes - orders
   app.get("/orders", verifyToken, (req, res) =>
     ordersController.listOrders(req, res),
   );
-  app.get("/orders/:orderId", verifyToken, verifyRole, (req, res) =>
-    ordersController.getOrder(req, res),
+  app.get(
+    "/orders/:orderId",
+    verifyToken,
+    verifyRole(["seller"]),
+    (req, res) => ordersController.getOrder(req, res),
   );
 
   app.post("/orders/finalize", verifyToken, (req, res) =>
     ordersController.finalizeOrder(req, res),
   );
 
-  app.patch("/orders/delivered/:orderId", verifyToken, verifyRole, (req, res) =>
-    ordersController.markAsDelivered(req, res),
+  app.patch(
+    "/orders/delivered/:orderId",
+    verifyToken,
+    verifyRole(["seller"]),
+    (req, res) => ordersController.markAsDelivered(req, res),
   );
 
   app.patch("/orders/cancelled/:orderId", verifyToken, (req, res) =>
     ordersController.markAsCancelled(req, res),
   );
 
+  // Admin
+  app.get("/admin", verifyToken, verifyRole(["admin"]), (req, res) =>
+    adminController.getAllUsers(req, res),
+  );
+  app.patch(
+    "/admin/password",
+    verifyToken,
+    verifyRole(["admin"]),
+    (req, res) => adminController.resetPassword(req, res),
+  );
+
+  // Admin - products management
+  app.get("/admin/sellers", verifyToken, verifyRole(["admin"]), (req, res) =>
+    adminController.getSellers(req, res),
+  );
+  app.get(
+    "/admin/products",
+    verifyToken,
+    verifyRole(["admin"]),
+    (req, res) => adminController.getSellerProducts(req, res),
+  );
+  app.post(
+    "/admin/products",
+    verifyToken,
+    verifyRole(["admin"]),
+    (req, res) => adminController.createProduct(req, res),
+  );
+  app.put(
+    "/admin/products/:productId",
+    verifyToken,
+    verifyRole(["admin"]),
+    (req, res) => adminController.updateProduct(req, res),
+  );
+
+  // Observability
   app.get("/debug-sentry", (_req, _res) => {
     throw new Error("Sentry funcionando");
   });

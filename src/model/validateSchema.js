@@ -115,6 +115,20 @@ export const resetUserSchema = z.strictObject({
     .regex(/^[0-9]+$/, "A senha deve conter apenas números."),
 });
 
+export const adminResetPasswordSchema = z.strictObject({
+  username: z
+    .string()
+    .min(3)
+    .max(20)
+    .nonempty("Nome de Usuário é obrigatório.")
+    .regex(/^[a-zA-Z0-9._]+$/, "Dados inválidos."),
+  newPassword: z
+    .string()
+    .length(4, "A senha deve ter exatamente 4 dígitos.")
+    .nonempty("A senha é obrigatória.")
+    .regex(/^[0-9]+$/, "A senha deve conter apenas números."),
+});
+
 export const createProductSchema = z.strictObject({
   name: z
     .string()
@@ -137,6 +151,23 @@ export const createProductSchema = z.strictObject({
     ),
   stockQuantity: z.number().gte(0, "O valor mínimo é zero").int().nonnegative(),
   imgUrl: z.string().max(200).optional(),
+});
+
+export const adminCreateProductSchema = z.strictObject({
+  ...createProductSchema.shape,
+  sellerUsername: z
+    .string()
+    .min(3, "Username deve ter no mínimo 3 caracteres.")
+    .max(20, "Username deve ter no máximo 20 caracteres.")
+    .nonempty("Nome de Usuário é obrigatório.")
+    .regex(
+      /^[a-zA-Z0-9._]+$/,
+      "Username só pode conter letras, números, . ou _, não pode conter espaços.",
+    ),
+});
+
+export const sellerIdQuerySchema = z.strictObject({
+  sellerId: z.uuid("ID do vendedor inválido."),
 });
 
 export const updateProductSchema = z.strictObject({
