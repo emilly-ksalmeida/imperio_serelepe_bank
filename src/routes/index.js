@@ -2,7 +2,6 @@ import * as Sentry from "@sentry/node";
 import express from "express";
 import verifyToken from "../middleware/verifyToken.js";
 import verifyRole from "../middleware/verifyRole.js";
-import verifyRoleAdmin from "../middleware/verifyRoleAdmin.js";
 
 import SessionsController from "../controllers/auth/sessions.controller.js";
 import UsersController from "../controllers/users/users.controller.js";
@@ -57,30 +56,42 @@ const routes = (app) => {
   app.get("/products", verifyToken, (req, res) =>
     productsController.getProducts(req, res),
   );
-  app.post("/products", verifyToken, verifyRole, (req, res) =>
+  app.post("/products", verifyToken, verifyRole(["seller"]), (req, res) =>
     productsController.createProduct(req, res),
   );
-  app.get("/products/seller", verifyToken, verifyRole, (req, res) =>
-    productsController.getSellerProducts(req, res),
+  app.get(
+    "/products/seller",
+    verifyToken,
+    verifyRole(["seller"]),
+    (req, res) => productsController.getSellerProducts(req, res),
   );
-  app.put("/products/seller/:productId", verifyToken, verifyRole, (req, res) =>
-    productsController.updateProduct(req, res),
+  app.put(
+    "/products/seller/:productId",
+    verifyToken,
+    verifyRole(["seller"]),
+    (req, res) => productsController.updateProduct(req, res),
   );
 
   //  Market routes - orders
   app.get("/orders", verifyToken, (req, res) =>
     ordersController.listOrders(req, res),
   );
-  app.get("/orders/:orderId", verifyToken, verifyRole, (req, res) =>
-    ordersController.getOrder(req, res),
+  app.get(
+    "/orders/:orderId",
+    verifyToken,
+    verifyRole(["seller"]),
+    (req, res) => ordersController.getOrder(req, res),
   );
 
   app.post("/orders/finalize", verifyToken, (req, res) =>
     ordersController.finalizeOrder(req, res),
   );
 
-  app.patch("/orders/delivered/:orderId", verifyToken, verifyRole, (req, res) =>
-    ordersController.markAsDelivered(req, res),
+  app.patch(
+    "/orders/delivered/:orderId",
+    verifyToken,
+    verifyRole(["seller"]),
+    (req, res) => ordersController.markAsDelivered(req, res),
   );
 
   app.patch("/orders/cancelled/:orderId", verifyToken, (req, res) =>
@@ -88,9 +99,37 @@ const routes = (app) => {
   );
 
   // Admin
-  app.get("/admin", verifyToken, verifyRoleAdmin, (req, res) => adminController.getAllUsers(req, res));
-  app.patch("/admin/password", verifyToken, verifyRoleAdmin, (req, res) =>
-    adminController.resetPassword(req, res),
+  app.get("/admin", verifyToken, verifyRole(["admin"]), (req, res) =>
+    adminController.getAllUsers(req, res),
+  );
+  app.patch(
+    "/admin/password",
+    verifyToken,
+    verifyRole(["admin"]),
+    (req, res) => adminController.resetPassword(req, res),
+  );
+
+  // Admin - products management
+  app.get("/admin/sellers", verifyToken, verifyRole(["admin"]), (req, res) =>
+    adminController.getSellers(req, res),
+  );
+  app.get(
+    "/admin/products",
+    verifyToken,
+    verifyRole(["admin"]),
+    (req, res) => adminController.getSellerProducts(req, res),
+  );
+  app.post(
+    "/admin/products",
+    verifyToken,
+    verifyRole(["admin"]),
+    (req, res) => adminController.createProduct(req, res),
+  );
+  app.put(
+    "/admin/products/:productId",
+    verifyToken,
+    verifyRole(["admin"]),
+    (req, res) => adminController.updateProduct(req, res),
   );
 
   // Observability

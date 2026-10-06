@@ -79,6 +79,22 @@ class ProductsRepository {
     }
   }
 
+  async updateById(productId, updateData) {
+    try {
+      return await this.repository.products.update({
+        where: {
+          id: productId,
+        },
+        data: updateData,
+        select: {
+          id: true,
+        },
+      });
+    } catch (error) {
+      this.#handleDatabaseError(error);
+    }
+  }
+
   async deleteByIdAndSeller(productId, currentUserId) {
     try {
       return this.repository.products.delete({

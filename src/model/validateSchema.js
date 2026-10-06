@@ -153,6 +153,23 @@ export const createProductSchema = z.strictObject({
   imgUrl: z.string().max(200).optional(),
 });
 
+export const adminCreateProductSchema = z.strictObject({
+  ...createProductSchema.shape,
+  sellerUsername: z
+    .string()
+    .min(3, "Username deve ter no mínimo 3 caracteres.")
+    .max(20, "Username deve ter no máximo 20 caracteres.")
+    .nonempty("Nome de Usuário é obrigatório.")
+    .regex(
+      /^[a-zA-Z0-9._]+$/,
+      "Username só pode conter letras, números, . ou _, não pode conter espaços.",
+    ),
+});
+
+export const sellerIdQuerySchema = z.strictObject({
+  sellerId: z.uuid("ID do vendedor inválido."),
+});
+
 export const updateProductSchema = z.strictObject({
   name: z
     .string()

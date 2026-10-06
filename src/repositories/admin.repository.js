@@ -21,6 +21,43 @@ export class AdminRepository {
     }
   }
 
+  async findAllSellers() {
+    try {
+      return await this.repository.users.findMany({
+        where: { role: "seller" },
+        select: {
+          id: true,
+          name: true,
+          username: true,
+        },
+      });
+    } catch (error) {
+      return this.#handleDatabaseError(error);
+    }
+  }
+
+  async findSellerOrThrow(sellerId) {
+    try {
+      return await this.repository.users.findUniqueOrThrow({
+        where: { id: sellerId, role: "seller" },
+        select: { id: true },
+      });
+    } catch (error) {
+      return this.#handleDatabaseError(error);
+    }
+  }
+
+  async findSellerByUsername(username) {
+    try {
+      return await this.repository.users.findUniqueOrThrow({
+        where: { username, role: "seller" },
+        select: { id: true },
+      });
+    } catch (error) {
+      return this.#handleDatabaseError(error);
+    }
+  }
+
   async updatePassword(username, passwordHash) {
     try {
       return await this.repository.users.update({
