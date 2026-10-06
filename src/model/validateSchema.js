@@ -115,6 +115,20 @@ export const resetUserSchema = z.strictObject({
     .regex(/^[0-9]+$/, "A senha deve conter apenas números."),
 });
 
+export const adminResetPasswordSchema = z.strictObject({
+  username: z
+    .string()
+    .min(3)
+    .max(20)
+    .nonempty("Nome de Usuário é obrigatório.")
+    .regex(/^[a-zA-Z0-9._]+$/, "Dados inválidos."),
+  newPassword: z
+    .string()
+    .length(4, "A senha deve ter exatamente 4 dígitos.")
+    .nonempty("A senha é obrigatória.")
+    .regex(/^[0-9]+$/, "A senha deve conter apenas números."),
+});
+
 export const createProductSchema = z.strictObject({
   name: z
     .string()

@@ -21,15 +21,34 @@ export class AdminRepository {
     }
   }
 
+  async updatePassword(username, passwordHash) {
+    try {
+      return await this.repository.users.update({
+        data: {
+          passwordHash: passwordHash,
+          account: {
+            update: {
+              accountPasswordHash: passwordHash,
+            },
+          },
+        },
+        where: {
+          username: username,
+        },
+        select: {
+          name: true,
+        },
+      });
+    } catch (error) {
+      return this.#handleDatabaseError(error);
+    }
+  }
+
   #handleDatabaseError(error) {
     if (error instanceof prismaImport.PrismaClientKnownRequestError) {
       if (error.code === "P2025") {
-        throw new NotFoundError("A operação falhou, produto não encontrado.");
-      } else if (error.code === "P2003") {
-        throw new NotFoundError(
-          "A operação falhou, recurso relacionado não encontrado.",
-        );
-      }
+        throw new NotFoundError("A operação falhou, usuário não encontrado.");
+      } 
     }
     throw error;
   }

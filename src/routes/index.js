@@ -89,6 +89,9 @@ const routes = (app) => {
 
   // Admin
   app.get("/admin", verifyToken, verifyRoleAdmin, (req, res) => adminController.getAllUsers(req, res));
+  app.patch("/admin/password", verifyToken, verifyRoleAdmin, (req, res) =>
+    adminController.resetPassword(req, res),
+  );
 
   // Observability
   app.get("/debug-sentry", (_req, _res) => {
