@@ -42,7 +42,7 @@ class ProductsRepository {
     }
   }
 
-  async createProduct(sellerId, name, description, unitPrice, stockQuantity) {
+  async createProduct(sellerId, name, description, unitPrice, stockQuantity, imgUrl) {
     try {
       return this.repository.products.create({
         data: {
@@ -51,6 +51,7 @@ class ProductsRepository {
           description,
           unitPrice,
           stockQuantity,
+          imgUrl,
         },
         select: {
           id: true,
@@ -79,11 +80,12 @@ class ProductsRepository {
     }
   }
 
-  async updateById(productId, updateData) {
+  async updateById(productId, sellerId, updateData) {
     try {
       return await this.repository.products.update({
         where: {
           id: productId,
+          sellerId: sellerId,
         },
         data: updateData,
         select: {

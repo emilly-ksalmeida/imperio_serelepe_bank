@@ -27,7 +27,7 @@ app.use(
       const permitida = Boolean(origem) && origensPermitidas.includes(origem);
       callback(null, permitida);
     },
-    methods: ["GET", "POST", "PATCH", "PUT"],
+    methods: ["GET", "POST", "PATCH"],
     credentials: true,
   })
 );

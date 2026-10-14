@@ -191,5 +191,30 @@ export const updateProductSchema = z.strictObject({
       "O valor precisa ser numérico com duas casas decimais.",
     ),
   stockQuantity: z.number().gte(0, "O valor mínimo é zero").int().nonnegative(),
-  imgUrl: z.string().max(200).optional(),
+  imgUrl: z.string().max(255).optional(),
+});
+
+export const adminUpdateProductSchema = z.strictObject({
+  id: z.number(),
+  name: z
+    .string()
+    .refine(
+      (name) => name.trim().length > 0,
+      "Nome não pode conter apenas espaços.",
+    )
+    .nonempty("Nome do produto é obrigatório."),
+  description: z
+    .string()
+    .min(10, "A descrição do produto deve ter no mínimo 10 caracteres.")
+    .max(200, "A descrição do produto deve ter no máximo 200 caracteres.")
+    .nonempty("Descrição do produto é obrigatória."),
+  unitPrice: z
+    .number()
+    .gt(1, "O valor mínimo para produtos é 1.00")
+    .refine(
+      (value) => /^\d+(\.00|\.0|\.\d{2})?$/.test(value.toString()),
+      "O valor precisa ser numérico com duas casas decimais.",
+    ),
+  stockQuantity: z.number().gte(0, "O valor mínimo é zero").int().nonnegative(),
+  imgUrl: z.string().max(255),
 });

@@ -15,7 +15,7 @@ export class ProductsService {
   }
 
   async newProduct(productData) {
-   const { sellerId, name, description, unitPrice, stockQuantity } =
+   const { sellerId, name, description, unitPrice, stockQuantity, imgUrl } =
       productData;
 
     return await this.productRepository.createProduct(
@@ -23,31 +23,42 @@ export class ProductsService {
       name,
       description,
       unitPrice,
-      stockQuantity
+      stockQuantity,
+      imgUrl
     );
   }
 
   async updateProduct(productId, currentUserId, updateData) {
-      const { name, description, unitPrice, stockQuantity } = updateData;
+      const { name, description, unitPrice, stockQuantity, imgUrl } = updateData;
       const isActive = stockQuantity > 0 ? true : false;
       const productIdParsed = parseInt(productId);
 
       const product = await this.productRepository.updateByIdAndSeller(
         productIdParsed,
         currentUserId,
-        { name, description, unitPrice, stockQuantity, isActive },
+        { name, description, unitPrice, stockQuantity, isActive, imgUrl },
       );
       return product;
   }
 
-  async updateProductById(productId, updateData) {
-    const { name, description, unitPrice, stockQuantity } = updateData;
+  async updateProductById(sellerId, updateData) {
+    const { id, name, description, unitPrice, stockQuantity, imgUrl } =
+      updateData;
     const isActive = stockQuantity > 0 ? true : false;
-    const productIdParsed = parseInt(productId);
+
+    const productData = {
+      name,
+      description,
+      unitPrice,
+      stockQuantity,
+      isActive,
+      imgUrl,
+    };
 
     const product = await this.productRepository.updateById(
-      productIdParsed,
-      { name, description, unitPrice, stockQuantity, isActive },
+      id,
+      sellerId,
+      productData,
     );
     return product;
   }
