@@ -36,8 +36,8 @@ export class AdminService {
     });
   }
 
-  async updateProduct(productId, updateData) {
-    return await this.productsService.updateProductById(productId, updateData);
+  async updateProduct(sellerId, updateData) {
+    return await this.productsService.updateProductById(sellerId, updateData);
   }
 
   async resetPassword(username, newPassword) {

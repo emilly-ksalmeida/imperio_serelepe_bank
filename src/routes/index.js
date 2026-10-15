@@ -65,7 +65,7 @@ const routes = (app) => {
     verifyRole(["seller"]),
     (req, res) => productsController.getSellerProducts(req, res),
   );
-  app.put(
+  app.patch(
     "/products/seller/:productId",
     verifyToken,
     verifyRole(["seller"]),
@@ -125,8 +125,8 @@ const routes = (app) => {
     verifyRole(["admin"]),
     (req, res) => adminController.createProduct(req, res),
   );
-  app.put(
-    "/admin/products/:productId",
+  app.patch(
+    "/admin/products/:sellerId",
     verifyToken,
     verifyRole(["admin"]),
     (req, res) => adminController.updateProduct(req, res),

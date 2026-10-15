@@ -2,8 +2,8 @@ import { z } from "zod";
 import {
   adminCreateProductSchema,
   adminResetPasswordSchema,
+  adminUpdateProductSchema,
   sellerIdQuerySchema,
-  updateProductSchema,
 } from "../../model/validateSchema.js";
 import { ValidationError } from "../../errors/products/validationError.error.js";
 import { AdminService } from "../../services/admin/admin.service.js";
@@ -55,17 +55,18 @@ export default class AdminController {
   }
 
   async updateProduct(req, res) {
-    const { productId } = req.params;
+    const { sellerId } = req.params;
     const updateData = req.body;
+    console.log("o que chega no back:   ", updateData);
 
-    const validatedNewData = updateProductSchema.safeParse(updateData);
+    const validatedNewData = adminUpdateProductSchema.safeParse(updateData);
     if (!validatedNewData.success) {
       const pretty = z.prettifyError(validatedNewData.error);
       throw new ValidationError(pretty);
     }
 
     const updatedProduct = await this.adminService.updateProduct(
-      productId,
+      sellerId,
       validatedNewData.data,
     );
     res.status(200).json(updatedProduct);
@@ -84,10 +85,7 @@ export default class AdminController {
 
     const { username, newPassword } = validatedResetData.data;
 
-    const result = await this.adminService.resetPassword(
-      username,
-      newPassword,
-    );
+    const result = await this.adminService.resetPassword(username, newPassword);
 
     res.status(200).json(result);
   }

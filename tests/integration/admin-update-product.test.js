@@ -7,7 +7,7 @@ import { createUserAdmin } from "../factories/admin.factory.js";
 import { createUserSeller } from "../factories/seller.factory.js";
 import { createUserWithAccount } from "../factories/user.factory.js";
 
-describe("PUT /admin/products/:productId", () => {
+describe("PATCH /admin/products/:sellerId", () => {
   describe("quando um admin atualiza um produto", () => {
     it("deve retornar 200 e persistir a alteração mesmo sendo produto de outro seller", async () => {
       const admin = await createUserAdmin(prisma);
@@ -22,6 +22,7 @@ describe("PUT /admin/products/:productId", () => {
       });
 
       const updateData = {
+        id: seller.product[0].id,
         name: "Caderno Espiral",
         description: "Caderno espiral com capa dura e 96 folhas",
         unitPrice: 450,
@@ -35,7 +36,7 @@ describe("PUT /admin/products/:productId", () => {
       const token = await generateJWT(admin, admin.account.id);
 
       const response = await request(app)
-        .put(`/admin/products/${seller.product[0].id}`)
+        .patch(`/admin/products/${seller.id}`)
         .set("Authorization", `Bearer ${token}`)
         .send(updateData);
 
@@ -67,8 +68,10 @@ describe("PUT /admin/products/:productId", () => {
 
     it("deve retornar 404 quando o produto não existe", async () => {
       const admin = await createUserAdmin(prisma);
+      const seller = await createUserSeller(prisma);
 
       const updateData = {
+        id: 999999,
         name: "Caderno Espiral",
         description: "Caderno espiral com capa dura e 96 folhas",
         unitPrice: 450,
@@ -82,7 +85,7 @@ describe("PUT /admin/products/:productId", () => {
       const token = await generateJWT(admin, admin.account.id);
 
       const response = await request(app)
-        .put("/admin/products/999999")
+        .patch(`/admin/products/${seller.id}`)
         .set("Authorization", `Bearer ${token}`)
         .send(updateData);
 
@@ -105,6 +108,7 @@ describe("PUT /admin/products/:productId", () => {
       });
 
       const updateData = {
+        id: seller.product[0].id,
         name: "",
         description: "curta",
         unitPrice: 0,
@@ -117,7 +121,7 @@ describe("PUT /admin/products/:productId", () => {
       const token = await generateJWT(admin, admin.account.id);
 
       const response = await request(app)
-        .put(`/admin/products/${seller.product[0].id}`)
+        .patch(`/admin/products/${seller.id}`)
         .set("Authorization", `Bearer ${token}`)
         .send(updateData);
 
@@ -151,7 +155,7 @@ describe("PUT /admin/products/:productId", () => {
       const token = await generateJWT(seller, seller.account.id);
 
       const response = await request(app)
-        .put(`/admin/products/${seller.product[0].id}`)
+        .patch(`/admin/products/${seller.id}`)
         .set("Authorization", `Bearer ${token}`)
         .send(updateData);
 
@@ -178,7 +182,7 @@ describe("PUT /admin/products/:productId", () => {
       const token = await generateJWT(user, account.id);
 
       const response = await request(app)
-        .put("/admin/products/1")
+        .patch("/admin/products/1")
         .set("Authorization", `Bearer ${token}`)
         .send(updateData);
 
@@ -192,7 +196,7 @@ describe("PUT /admin/products/:productId", () => {
       const app = express();
       routes(app);
 
-      const response = await request(app).put("/admin/products/1").send({});
+      const response = await request(app).patch("/admin/products/1").send({});
 
       expect(response.statusCode).toBe(403);
       expect(response.body).toEqual({ message: "Token não fornecido." });
